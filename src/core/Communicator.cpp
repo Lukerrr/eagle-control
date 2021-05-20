@@ -85,37 +85,6 @@ bool CCommunicator::TryConnect()
     return m_bConnected;
 }
 
-bool CCommunicator::SendMission(SMissionData data)
-{
-    ECmdType type = CMD_MISSION;
-    int pathSize = data.path.size();
-    int pathDataLen = pathSize * sizeof(SMissionData::Point);
-
-    int len =
-    sizeof(type) +
-    sizeof(pathSize) +
-    pathDataLen +
-    sizeof(data.hash);
-
-    char* buf = new char[len];
-    char* bufTmp = buf;
-
-    memcpy(bufTmp, &type, sizeof(type));
-    bufTmp += sizeof(type);
-
-    memcpy(bufTmp, &pathSize, sizeof(pathSize));
-    bufTmp += sizeof(pathSize);
-
-    memcpy(bufTmp, &data.path[0], pathDataLen);
-    bufTmp += pathDataLen;
-
-    memcpy(bufTmp, &data.hash, sizeof(data.hash));
-    
-    bool bResult = SendInternal(buf, len);
-    delete[] buf;
-    return bResult;
-}
-
 bool CCommunicator::SendInternal(char* pData, int len)
 {
     if (send(m_gsSocket, pData, len, 0) == -1)
@@ -152,8 +121,30 @@ bool CCommunicator::Update()
         }
         else if (dataLen > 0)
         {
-            // Save drone state
-            m_droneState = *((SDroneState*)data);
+            char *tmp = data;
+            ERspType type = *((ERspType*)tmp);
+            tmp += sizeof(ERspType);
+
+            switch(type)
+            {
+            case RSP_DRONE_STATE:
+            {
+                // Save drone state
+                m_droneState = *((SDroneState*)tmp);
+                break;
+            }
+            case RSP_POINT_CLOUD:
+            {
+                // Save point cloud chunk
+                SPointCloud cloud = *((SPointCloud*)tmp);
+                /*
+                * TODO: save point cloud
+                */
+                break;
+            }
+            default:
+                break;
+            }
         }
 
         delete[] data;

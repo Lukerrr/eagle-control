@@ -50,24 +50,24 @@ bool QUserInterface::event(QEvent* pEvent)
         QDroneStateEvent* pStateEvt = static_cast<QDroneStateEvent*>(pEvent);
         SDroneState state = pStateEvt->m_state;
         
-        QString posStr, rotStr, hgtStr, modeStr;
+        QString posStr, rotStr, cloudStr, modeStr;
         posStr.sprintf("Position: [%.2f, %.2f, %.2f]", state.x, state.y, state.z);
         rotStr.sprintf("Rotation: [%.2f, %.2f, %.2f]", state.roll, state.pitch, state.yaw);
-        hgtStr.sprintf("Ground distance: %.2f", state.groundDist);
+        cloudStr.sprintf("Cloud size: %d (%d B)", state.cloudSize, sizeof(SPointCloud::CloudPt) * state.cloudSize);
         modeStr.sprintf("Offboard: %s", state.bOffboard ? "enabled" : "disabled");
 
         m_ui.droneStatePos->setText(posStr);
         m_ui.droneStateRot->setText(rotStr);
-        m_ui.droneStateHgt->setText(hgtStr);
+        m_ui.droneStateCloud->setText(cloudStr);
         m_ui.droneStateMode->setText(modeStr);
 
         m_ui.chargeBar->setValue(state.charge * 100.f);
 
         m_ui.armBtn->setText(state.bArmed ? "Disarm" : "Arm");
 
-        bool bWorking = state.systemState > SDroneState::ST_IDLE;
-        bool bCanStart = state.systemState == SDroneState::ST_IDLE && state.missionHash == m_currentMission.hash && m_currentMission.hash != -1;
-        bool bCanStop = state.systemState == SDroneState::ST_WORKING;
+        bool bWorking = state.systemState > ST_IDLE;
+        bool bCanStart = state.systemState == ST_IDLE && state.missionHash == m_currentMission.hash && m_currentMission.hash != -1;
+        bool bCanStop = state.systemState == ST_WORKING;
 
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");
         m_ui.startBtn->setEnabled(state.bArmed && (bCanStart || bCanStop));

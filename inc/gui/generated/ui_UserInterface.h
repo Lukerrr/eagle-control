@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfacent4368.ui'
+** Form generated from reading UI file 'user_interfaceeJE405.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.9.5
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACENT4368_H
-#define USER_INTERFACENT4368_H
+#ifndef USER_INTERFACEEJE405_H
+#define USER_INTERFACEEJE405_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -33,7 +33,7 @@ public:
     QGroupBox *droneStateBox;
     QLabel *droneStatePos;
     QLabel *droneStateRot;
-    QLabel *droneStateHgt;
+    QLabel *droneStateCloud;
     QLabel *droneStateMode;
     QLabel *chargeLabel;
     QProgressBar *chargeBar;
@@ -77,9 +77,9 @@ public:
         droneStateRot = new QLabel(droneStateBox);
         droneStateRot->setObjectName(QStringLiteral("droneStateRot"));
         droneStateRot->setGeometry(QRect(10, 50, 251, 21));
-        droneStateHgt = new QLabel(droneStateBox);
-        droneStateHgt->setObjectName(QStringLiteral("droneStateHgt"));
-        droneStateHgt->setGeometry(QRect(10, 70, 251, 21));
+        droneStateCloud = new QLabel(droneStateBox);
+        droneStateCloud->setObjectName(QStringLiteral("droneStateCloud"));
+        droneStateCloud->setGeometry(QRect(10, 70, 251, 21));
         droneStateMode = new QLabel(droneStateBox);
         droneStateMode->setObjectName(QStringLiteral("droneStateMode"));
         droneStateMode->setGeometry(QRect(10, 90, 251, 21));
@@ -167,7 +167,7 @@ public:
         droneStateBox->setTitle(QApplication::translate("UserInterface", "Vehicle data", Q_NULLPTR));
         droneStatePos->setText(QApplication::translate("UserInterface", "Position: [0.0, 0.0, 0.0]", Q_NULLPTR));
         droneStateRot->setText(QApplication::translate("UserInterface", "Rotation: [0.0, 0.0, 0.0]", Q_NULLPTR));
-        droneStateHgt->setText(QApplication::translate("UserInterface", "Ground distance: 0.0", Q_NULLPTR));
+        droneStateCloud->setText(QApplication::translate("UserInterface", "Cloud size: 0 (0 B)", Q_NULLPTR));
         droneStateMode->setText(QApplication::translate("UserInterface", "Offboard: disabled", Q_NULLPTR));
         chargeLabel->setText(QApplication::translate("UserInterface", "Battery charge:", Q_NULLPTR));
         armBtn->setText(QApplication::translate("UserInterface", "Arm", Q_NULLPTR));
@@ -190,4 +190,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACENT4368_H
+#endif // USER_INTERFACEEJE405_H

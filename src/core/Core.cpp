@@ -3,7 +3,6 @@
 #include "Crc32.h"
 #include "Communicator.h"
 #include "Configurator.h"
-#include "CmdMsgs.h"
 
 #include "InterfaceEvents.h"
 
@@ -85,7 +84,7 @@ void CCore::Run()
             if(m_eventsTriggers.m_bStartStop)
             {
                 m_eventsTriggers.m_bStartStop = false;
-                if(state.systemState == SDroneState::ST_IDLE)
+                if(state.systemState == ST_IDLE)
                 {
                     if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
                     {
@@ -93,7 +92,7 @@ void CCore::Run()
                         QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
                     }
                 }
-                else if(state.systemState > SDroneState::ST_IDLE)
+                else if(state.systemState > ST_IDLE)
                 {
                     g_pComm->Send(SCmdStop());
                 }
@@ -102,9 +101,9 @@ void CCore::Run()
             if(m_eventsTriggers.m_bSendMission)
             {
                 m_eventsTriggers.m_bSendMission = false;
-                if( m_missionData.hash != -1 && state.systemState <= SDroneState::ST_IDLE)
+                if( m_missionData.hash != -1 && state.systemState <= ST_IDLE)
                 {
-                    g_pComm->SendMission(m_missionData);
+                    g_pComm->Send(m_missionData);
                 }
             }
 
@@ -138,18 +137,22 @@ void CCore::Invalidate()
 void CCore::SetMissionPath(CLinePath2D path)
 {
     m_mutex.lock();
-    m_missionData.path.clear();
-    for(Vec2 pt : path.GetPoints())
+    m_missionData.pathSize = path.GetSize();
+    if(m_missionData.pathSize > m_missionData.pathMaxSize)
     {
-        m_missionData.path.push_back({pt.x, pt.y});
+        m_missionData.pathSize = m_missionData.pathMaxSize;
     }
 
-    if(m_missionData.path.size() > 0)
+    for(int i = 0; i < m_missionData.pathSize; ++i)
     {
-        uint32_t len = m_missionData.path.size() * sizeof(SMissionData::Point);
-        uint8_t* buf = new uint8_t[len];
-        memcpy(buf, &m_missionData.path[0], len);
-        m_missionData.hash = GetCrc32(buf, len);
+        m_missionData.path[i].x = path.GetPoint(i).x;
+        m_missionData.path[i].y = path.GetPoint(i).y;
+    }
+
+    if(m_missionData.pathSize > 0)
+    {
+        uint32_t len = m_missionData.pathSize * sizeof(SMissionData::Point);
+        m_missionData.hash = GetCrc32((uint8_t*)m_missionData.path, len);
     }
     else
     {
@@ -157,7 +160,7 @@ void CCore::SetMissionPath(CLinePath2D path)
         m_missionData.hash = -1;
     }
 
-    bool bWorking = g_pComm->GetState().systemState > SDroneState::ST_IDLE;
+    bool bWorking = g_pComm->GetState().systemState > ST_IDLE;
     QCoreApplication::postEvent(m_pUi, new QMissionChangedEvent(m_missionData, bWorking));
     m_mutex.unlock();
 }

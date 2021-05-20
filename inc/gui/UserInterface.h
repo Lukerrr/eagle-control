@@ -1,8 +1,8 @@
 #pragma once
 
 #include "generated/ui_UserInterface.h"
-#include "MissionData.h"
 #include "PlannerWidget.h"
+#include "CmdMsgs.h"
 
 #include <QCloseEvent>
 

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Singleton.h"
-#include "MsgTypes.h"
-#include "DroneState.h"
-#include "MissionData.h"
+#include "CmdMsgs.h"
+#include "RspMsgs.h"
 
 #include <string.h>
 
@@ -20,7 +19,6 @@ public:
 
     template<typename T>
     bool Send(T msg);
-    bool SendMission(SMissionData data);
 
 private:
     void Reset();

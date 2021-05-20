@@ -70,7 +70,7 @@
       <string>Rotation: [0.0, 0.0, 0.0]</string>
      </property>
     </widget>
-    <widget class="QLabel" name="droneStateHgt">
+    <widget class="QLabel" name="droneStateCloud">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -80,7 +80,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Ground distance: 0.0</string>
+      <string>Cloud size: 0 (0 B)</string>
      </property>
     </widget>
     <widget class="QLabel" name="droneStateMode">

@@ -3,7 +3,6 @@
 #include "Singleton.h"
 #include "Communicator.h"
 #include "UserInterface.h"
-#include "MissionData.h"
 #include <atomic>
 #include <mutex>
 

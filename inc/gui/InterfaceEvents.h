@@ -3,8 +3,8 @@
 #include <QtCore/QEvent>
 #include <QtCore/QTime>
 
-#include "DroneState.h"
-#include "MissionData.h"
+#include "RspMsgs.h"
+#include "CmdMsgs.h"
 
 enum EInterfaceEvent
 {
