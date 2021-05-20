@@ -119,31 +119,39 @@ bool CCommunicator::Update()
             m_bConnected = false;
             m_droneState = SDroneState();
         }
-        else if (dataLen > 0)
+        else if(dataLen > 0)
         {
             char *tmp = data;
-            ERspType type = *((ERspType*)tmp);
-            tmp += sizeof(ERspType);
+            while(dataLen > 0)
+            {
+                ERspType type = *((ERspType*)tmp);
+                tmp += sizeof(ERspType);
+                dataLen -= sizeof(ERspType);
 
-            switch(type)
-            {
-            case RSP_DRONE_STATE:
-            {
-                // Save drone state
-                m_droneState = *((SDroneState*)tmp);
-                break;
-            }
-            case RSP_POINT_CLOUD:
-            {
-                // Save point cloud chunk
-                SPointCloud cloud = *((SPointCloud*)tmp);
-                /*
-                * TODO: save point cloud
-                */
-                break;
-            }
-            default:
-                break;
+                switch(type)
+                {
+                case RSP_DRONE_STATE:
+                {
+                    // Save drone state
+                    m_droneState = *((SDroneState*)tmp);
+                    tmp += sizeof(SDroneState);
+                    dataLen -= sizeof(SDroneState);
+                    break;
+                }
+                case RSP_POINT_CLOUD:
+                {
+                    // Save point cloud chunk
+                    SPointCloud cloud = *((SPointCloud*)tmp);
+                    tmp += sizeof(SPointCloud);
+                    dataLen -= sizeof(SPointCloud);
+                    /*
+                    * TODO: save point cloud
+                    */
+                    break;
+                }
+                default:
+                    break;
+                }
             }
         }
 

@@ -19,6 +19,7 @@ class CCore : public TSingleton<CCore>
         bool m_bSendMission = false;
         bool m_bSendHeight = false;
         bool m_bSendTolerance = false;
+        bool m_bGetCloud = false;
     };
 
 public:
@@ -38,6 +39,7 @@ public:
     void RequestSendMission();
     void RequestSendHeight();
     void RequestSendTolerance();
+    void RequestGetCloud();
 
 private:
     QUserInterface* m_pUi = NULL;

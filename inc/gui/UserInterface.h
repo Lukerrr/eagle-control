@@ -26,6 +26,7 @@ private:
     void OnSendPathBtnClicked();
     void OnAdjustHeightBtnClicked();
     void OnAdjustToleranceBtnClicked();
+    void OnGetCloudBtnClicked();
 
     void OnHeightChanged(double val);
     void OnToleranceChanged(double val);

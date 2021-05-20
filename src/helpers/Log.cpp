@@ -5,7 +5,7 @@
 #include <sstream>
 #include <fstream>
 
-#define LOG_FILE_DIR    "logs\\"
+#define LOG_FILE_DIR    "logs/"
 #define LOG_FILE_EXT    "txt"
 
 #define LOG_FILE_NAME   "EagleLog"

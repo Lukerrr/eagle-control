@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfaceeJE405.ui'
+** Form generated from reading UI file 'user_interfaceAK9207.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.9.5
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACEEJE405_H
-#define USER_INTERFACEEJE405_H
+#ifndef USER_INTERFACEAK9207_H
+#define USER_INTERFACEAK9207_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -50,13 +50,14 @@ public:
     QPushButton *adjustToleranceBtn;
     QLabel *pathSpacingLabel;
     QDoubleSpinBox *pathSpacingSpinBox;
+    QPushButton *getCloudBtn;
 
     void setupUi(QMainWindow *UserInterface)
     {
         if (UserInterface->objectName().isEmpty())
             UserInterface->setObjectName(QStringLiteral("UserInterface"));
         UserInterface->setEnabled(true);
-        UserInterface->resize(543, 188);
+        UserInterface->resize(543, 207);
         UserInterface->setContextMenuPolicy(Qt::DefaultContextMenu);
         UserInterface->setDocumentMode(false);
         UserInterface->setDockOptions(QMainWindow::AllowTabbedDocks|QMainWindow::AnimatedDocks);
@@ -70,7 +71,7 @@ public:
         droneStateBox = new QGroupBox(centralwidget);
         droneStateBox->setObjectName(QStringLiteral("droneStateBox"));
         droneStateBox->setEnabled(true);
-        droneStateBox->setGeometry(QRect(260, 10, 271, 151));
+        droneStateBox->setGeometry(QRect(260, 10, 271, 171));
         droneStatePos = new QLabel(droneStateBox);
         droneStatePos->setObjectName(QStringLiteral("droneStatePos"));
         droneStatePos->setGeometry(QRect(10, 30, 251, 21));
@@ -86,11 +87,11 @@ public:
         chargeLabel = new QLabel(droneStateBox);
         chargeLabel->setObjectName(QStringLiteral("chargeLabel"));
         chargeLabel->setEnabled(true);
-        chargeLabel->setGeometry(QRect(10, 123, 111, 17));
+        chargeLabel->setGeometry(QRect(10, 140, 111, 17));
         chargeBar = new QProgressBar(droneStateBox);
         chargeBar->setObjectName(QStringLiteral("chargeBar"));
         chargeBar->setEnabled(true);
-        chargeBar->setGeometry(QRect(120, 120, 141, 23));
+        chargeBar->setGeometry(QRect(120, 137, 141, 23));
         chargeBar->setValue(0);
         armBtn = new QPushButton(centralwidget);
         armBtn->setObjectName(QStringLiteral("armBtn"));
@@ -98,7 +99,7 @@ public:
         armBtn->setGeometry(QRect(10, 10, 89, 25));
         connStateLabel = new QLabel(centralwidget);
         connStateLabel->setObjectName(QStringLiteral("connStateLabel"));
-        connStateLabel->setGeometry(QRect(430, 168, 101, 17));
+        connStateLabel->setGeometry(QRect(430, 185, 101, 17));
         connStateLabel->setLayoutDirection(Qt::LeftToRight);
         connStateLabel->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         startBtn = new QPushButton(centralwidget);
@@ -111,14 +112,14 @@ public:
         plannerBtn->setGeometry(QRect(150, 10, 89, 25));
         heightSpinBox = new QDoubleSpinBox(centralwidget);
         heightSpinBox->setObjectName(QStringLiteral("heightSpinBox"));
-        heightSpinBox->setGeometry(QRect(110, 80, 71, 21));
+        heightSpinBox->setGeometry(QRect(110, 100, 71, 21));
         heightSpinBox->setMinimum(1.8);
         heightSpinBox->setMaximum(8);
         heightSpinBox->setSingleStep(0.01);
         heightSpinBox->setValue(2);
         heightLabel = new QLabel(centralwidget);
         heightLabel->setObjectName(QStringLiteral("heightLabel"));
-        heightLabel->setGeometry(QRect(10, 82, 91, 17));
+        heightLabel->setGeometry(QRect(10, 102, 91, 17));
         sendPathBtn = new QPushButton(centralwidget);
         sendPathBtn->setObjectName(QStringLiteral("sendPathBtn"));
         sendPathBtn->setEnabled(false);
@@ -126,13 +127,13 @@ public:
         adjustHeightBtn = new QPushButton(centralwidget);
         adjustHeightBtn->setObjectName(QStringLiteral("adjustHeightBtn"));
         adjustHeightBtn->setEnabled(true);
-        adjustHeightBtn->setGeometry(QRect(10, 130, 101, 25));
+        adjustHeightBtn->setGeometry(QRect(10, 150, 101, 25));
         toleranceLabel = new QLabel(centralwidget);
         toleranceLabel->setObjectName(QStringLiteral("toleranceLabel"));
-        toleranceLabel->setGeometry(QRect(10, 102, 91, 17));
+        toleranceLabel->setGeometry(QRect(10, 122, 91, 17));
         toleranceSpinBox = new QDoubleSpinBox(centralwidget);
         toleranceSpinBox->setObjectName(QStringLiteral("toleranceSpinBox"));
-        toleranceSpinBox->setGeometry(QRect(110, 100, 71, 21));
+        toleranceSpinBox->setGeometry(QRect(110, 120, 71, 21));
         toleranceSpinBox->setMinimum(0.01);
         toleranceSpinBox->setMaximum(15);
         toleranceSpinBox->setSingleStep(0.01);
@@ -140,18 +141,22 @@ public:
         adjustToleranceBtn = new QPushButton(centralwidget);
         adjustToleranceBtn->setObjectName(QStringLiteral("adjustToleranceBtn"));
         adjustToleranceBtn->setEnabled(true);
-        adjustToleranceBtn->setGeometry(QRect(120, 130, 121, 25));
+        adjustToleranceBtn->setGeometry(QRect(120, 150, 121, 25));
         pathSpacingLabel = new QLabel(centralwidget);
         pathSpacingLabel->setObjectName(QStringLiteral("pathSpacingLabel"));
-        pathSpacingLabel->setGeometry(QRect(10, 162, 101, 17));
+        pathSpacingLabel->setGeometry(QRect(10, 182, 101, 17));
         pathSpacingSpinBox = new QDoubleSpinBox(centralwidget);
         pathSpacingSpinBox->setObjectName(QStringLiteral("pathSpacingSpinBox"));
-        pathSpacingSpinBox->setGeometry(QRect(110, 160, 71, 21));
+        pathSpacingSpinBox->setGeometry(QRect(110, 180, 71, 21));
         pathSpacingSpinBox->setDecimals(2);
         pathSpacingSpinBox->setMinimum(1);
         pathSpacingSpinBox->setMaximum(1000);
         pathSpacingSpinBox->setSingleStep(0.01);
         pathSpacingSpinBox->setValue(20);
+        getCloudBtn = new QPushButton(centralwidget);
+        getCloudBtn->setObjectName(QStringLiteral("getCloudBtn"));
+        getCloudBtn->setEnabled(true);
+        getCloudBtn->setGeometry(QRect(10, 70, 89, 25));
         UserInterface->setCentralWidget(centralwidget);
 
         retranslateUi(UserInterface);
@@ -180,6 +185,7 @@ public:
         toleranceLabel->setText(QApplication::translate("UserInterface", "Tolerance:", Q_NULLPTR));
         adjustToleranceBtn->setText(QApplication::translate("UserInterface", "Adjust tolerance", Q_NULLPTR));
         pathSpacingLabel->setText(QApplication::translate("UserInterface", "Path spacing:", Q_NULLPTR));
+        getCloudBtn->setText(QApplication::translate("UserInterface", "Get cloud", Q_NULLPTR));
     } // retranslateUi
 
 };
@@ -190,4 +196,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACEEJE405_H
+#endif // USER_INTERFACEAK9207_H

@@ -14,6 +14,7 @@ QUserInterface::QUserInterface(QWidget* parent /*= Q_NULLPTR*/)
     connect(m_ui.sendPathBtn, &QPushButton::clicked, this, &QUserInterface::OnSendPathBtnClicked);
     connect(m_ui.adjustHeightBtn, &QPushButton::clicked, this, &QUserInterface::OnAdjustHeightBtnClicked);
     connect(m_ui.adjustToleranceBtn, &QPushButton::clicked, this, &QUserInterface::OnAdjustToleranceBtnClicked);
+    connect(m_ui.getCloudBtn, &QPushButton::clicked, this, &QUserInterface::OnGetCloudBtnClicked);
 
     connect(m_ui.pathSpacingSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &QUserInterface::OnPathSpacingChanged);
     connect(m_ui.heightSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &QUserInterface::OnHeightChanged);
@@ -71,6 +72,8 @@ bool QUserInterface::event(QEvent* pEvent)
 
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");
         m_ui.startBtn->setEnabled(state.bArmed && (bCanStart || bCanStop));
+
+        m_ui.getCloudBtn->setEnabled(state.cloudSize > 0);
 
         QGeoCoordinate dronePos = QGeoCoordinate(state.lat, state.lon);
 
@@ -157,6 +160,11 @@ void QUserInterface::OnAdjustToleranceBtnClicked()
 {
     g_pCore->RequestSendTolerance();
     m_ui.adjustToleranceBtn->setEnabled(false);
+}
+
+void QUserInterface::OnGetCloudBtnClicked()
+{
+    g_pCore->RequestGetCloud();
 }
 
 void QUserInterface::OnPlannerBtnClicked()

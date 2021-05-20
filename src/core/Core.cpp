@@ -122,6 +122,13 @@ void CCore::Run()
                 cmd.tolerance = m_flightTolerance;
                 g_pComm->Send(cmd);
             }
+
+            if(m_eventsTriggers.m_bGetCloud)
+            {
+                m_eventsTriggers.m_bGetCloud = false;
+                SCmdGetCloud cmd;
+                g_pComm->Send(cmd);
+            }
             m_mutex.unlock();
         }
 
@@ -215,5 +222,12 @@ void CCore::RequestSendTolerance()
 {
     m_mutex.lock();
     m_eventsTriggers.m_bSendTolerance = true;
+    m_mutex.unlock();
+}
+
+void CCore::RequestGetCloud()
+{
+    m_mutex.lock();
+    m_eventsTriggers.m_bGetCloud = true;
     m_mutex.unlock();
 }
