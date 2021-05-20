@@ -14,5 +14,5 @@ double m2geo(double meters, double latitude)
 {
     // Earth mean radius
     const double r = 6371032.;
-    return meters / (abs(cos(latitude)) * r);
+    return meters / (fabs(cos(latitude)) * r);
 }

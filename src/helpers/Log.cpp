@@ -5,7 +5,7 @@
 #include <sstream>
 #include <fstream>
 
-#define LOG_FILE_DIR    "logs/"
+#define LOG_FILE_DIR    "logs\\"
 #define LOG_FILE_EXT    "txt"
 
 #define LOG_FILE_NAME   "EagleLog"
@@ -46,6 +46,8 @@ CLog::CLog()
 
 #ifdef __linux__
     system("mkdir -p " LOG_FILE_DIR);
+#elif _WIN32
+    system("mkdir " LOG_FILE_DIR);
 #endif
 }
 
@@ -55,38 +57,35 @@ void CLog::LogInternal(ELogLevel level, const char* szInfo)
 
     FILE* pLogFile = fopen(s_log.m_filePath.c_str(), "a");
 
-    if (pLogFile == NULL)
+    if (pLogFile != NULL)
     {
-        return;
-    }
+        const char* levelPrefix = "";
+        switch (level)
+        {
+        case LOG_INFO:
+            levelPrefix = "INFO";
+            break;
+        case LOG_WARNING:
+            levelPrefix = "WARNING";
+            break;
+        case LOG_ERROR:
+            levelPrefix = "ERROR";
+            break;
+        default:
+            break;
+        }
 
-    const char* levelPrefix = "";
-    switch (level)
-    {
-    case LOG_INFO:
-        levelPrefix = "INFO";
-        break;
-    case LOG_WARNING:
-        levelPrefix = "WARNING";
-        break;
-    case LOG_ERROR:
-        levelPrefix = "ERROR";
-        break;
-    default:
-        break;
-    }
+        ostringstream data;
+        data << "[" << GetTimestamp() << "] " << levelPrefix << ": " << szInfo << "\n";
 
-    ostringstream data;
-    data << "[" << GetTimestamp() << "] " << levelPrefix << ": " << szInfo << "\n";
+        string dataStr = data.str().c_str();
 
-    string dataStr = data.str().c_str();
-
-    fwrite(dataStr.c_str(), sizeof(char), dataStr.size(), pLogFile);
-    fclose(pLogFile);
+        fwrite(dataStr.c_str(), sizeof(char), dataStr.size(), pLogFile);
+        fclose(pLogFile);
 
 #ifdef DEBUG_BUILD
-    printf(dataStr.c_str());
+        printf(dataStr.c_str());
 #endif
-
+    }
     s_logMutex.unlock();
 }

@@ -30,7 +30,6 @@ bool CCore::Init()
         m_pUi->show();
         m_delayMs = uint64_t(1000.0 / g_pConf->GetConfig().coreRate);
         m_bValid.store(true);
-        m_bValid.store(true);
 
         CLog::Log(LOG_INFO, "CCore has been initialized");
 

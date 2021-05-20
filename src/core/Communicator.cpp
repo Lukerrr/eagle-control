@@ -2,17 +2,31 @@
 #include "Communicator.h"
 #include "Configurator.h"
 
+#ifdef __linux__
 #include <arpa/inet.h>
 #include <sys/fcntl.h>
 #include <unistd.h>
+#elif _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+#else
+#endif
 
 CCommunicator::CCommunicator()
 {
+#ifdef _WIN32
+    WSADATA wsaData;
+    WSAStartup(MAKEWORD(2, 2), &wsaData);
+#endif
     Reset();
 }
 
 CCommunicator::~CCommunicator()
 {
+#ifdef _WIN32
+    WSACleanup();
+#endif
     Invalidate();
 }
 
@@ -21,7 +35,11 @@ void CCommunicator::Invalidate()
     CLog::Log(LOG_INFO, "CCommunicator: invalidating...");
     if(m_gsSocket != -1)
     {
+#ifdef __linux__
         close(m_gsSocket);
+#elif _WIN32
+        closesocket(m_gsSocket);
+#endif
         m_gsSocket = -1;
     }
     m_bConnected = false;
@@ -38,7 +56,13 @@ void CCommunicator::Reset()
     }
     else
     {
+        // Set non-blocking mode
+#ifdef __linux__
         fcntl(m_gsSocket, F_SETFL, fcntl(m_gsSocket, F_GETFL, 0) | O_NONBLOCK);
+#elif _WIN32
+        u_long mode = 1;
+        ioctlsocket(m_gsSocket, FIONBIO, &mode);
+#endif
         CLog::Log(LOG_INFO, "CCommunicator: socket created successfully");
     }
 }
@@ -53,6 +77,10 @@ bool CCommunicator::TryConnect()
     inet_pton(AF_INET, cfg.droneIp.c_str(), &hint.sin_addr);
 
     m_bConnected = connect(m_gsSocket, (sockaddr*)&hint, sizeof(hint)) != -1;
+
+#ifdef _WIN32
+    m_bConnected |= WSAGetLastError() == 10035;
+#endif
 
     return m_bConnected;
 }

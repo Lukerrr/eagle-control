@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.8)
 project(eagle_x)
 
+SET(CMAKE_PREFIX_PATH "C:\\Qt\\Qt5.12.10\\5.12.10\\msvc2017\\")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 
 ## Use debug logic

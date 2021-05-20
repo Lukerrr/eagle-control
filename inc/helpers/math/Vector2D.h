@@ -12,7 +12,7 @@ struct Vec2
 
     double GetLength()
     {
-        return sqrtf(x * x + y * y);
+        return sqrt(x * x + y * y);
     }
 
     double GetDistance(Vec2 v)
