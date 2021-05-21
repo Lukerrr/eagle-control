@@ -1,4 +1,5 @@
 #include "Log.h"
+#include "Core.h"
 #include "Communicator.h"
 #include "Configurator.h"
 
@@ -24,10 +25,10 @@ CCommunicator::CCommunicator()
 
 CCommunicator::~CCommunicator()
 {
+    Invalidate();
 #ifdef _WIN32
     WSACleanup();
 #endif
-    Invalidate();
 }
 
 void CCommunicator::Invalidate()
@@ -105,12 +106,10 @@ bool CCommunicator::Update()
 
     // Read all received packets
     int dataLen = 0;
-    int maxDataLen = g_pConf->GetConfig().packetLen;
     do
     {
-        char *data = new char[maxDataLen];
-        memset(data, 0, maxDataLen);
-        dataLen = recv(m_gsSocket, data, maxDataLen, 0);
+        ERspType msgType;
+        dataLen = recv(m_gsSocket, &msgType, sizeof(msgType), 0);
 
         if (dataLen == 0)
         {
@@ -121,41 +120,31 @@ bool CCommunicator::Update()
         }
         else if(dataLen > 0)
         {
-            char *tmp = data;
-            while(dataLen > 0)
+            switch(msgType)
             {
-                ERspType type = *((ERspType*)tmp);
-                tmp += sizeof(ERspType);
-                dataLen -= sizeof(ERspType);
-
-                switch(type)
+            case RSP_DRONE_STATE:
+            {
+                // Save drone state
+                recv(m_gsSocket, &m_droneState, sizeof(m_droneState), 0);
+                break;
+            }
+            case RSP_POINT_CLOUD:
+            {
+                // Save point cloud chunk
+                SPointCloud cloud;
+                recv(m_gsSocket, &cloud, sizeof(cloud), 0);
+                CDownloadManager* pDownloadManager = g_pCore->GetDownloadManager();
+                if(pDownloadManager)
                 {
-                case RSP_DRONE_STATE:
-                {
-                    // Save drone state
-                    m_droneState = *((SDroneState*)tmp);
-                    tmp += sizeof(SDroneState);
-                    dataLen -= sizeof(SDroneState);
-                    break;
+                    pDownloadManager->AppendChunk(cloud);
+                    g_pCore->UpdateCloudPercent();
                 }
-                case RSP_POINT_CLOUD:
-                {
-                    // Save point cloud chunk
-                    SPointCloud cloud = *((SPointCloud*)tmp);
-                    tmp += sizeof(SPointCloud);
-                    dataLen -= sizeof(SPointCloud);
-                    /*
-                    * TODO: save point cloud
-                    */
-                    break;
-                }
-                default:
-                    break;
-                }
+                break;
+            }
+            default:
+                break;
             }
         }
-
-        delete[] data;
 
     } while (dataLen > 0);
 

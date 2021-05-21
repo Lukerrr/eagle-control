@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfaceAK9207.ui'
+** Form generated from reading UI file 'user_interfaceP25887.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.9.5
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACEAK9207_H
-#define USER_INTERFACEAK9207_H
+#ifndef USER_INTERFACEP25887_H
+#define USER_INTERFACEP25887_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -51,6 +51,7 @@ public:
     QLabel *pathSpacingLabel;
     QDoubleSpinBox *pathSpacingSpinBox;
     QPushButton *getCloudBtn;
+    QProgressBar *cloudDownloadBar;
 
     void setupUi(QMainWindow *UserInterface)
     {
@@ -105,7 +106,7 @@ public:
         startBtn = new QPushButton(centralwidget);
         startBtn->setObjectName(QStringLiteral("startBtn"));
         startBtn->setEnabled(false);
-        startBtn->setGeometry(QRect(10, 40, 89, 25));
+        startBtn->setGeometry(QRect(10, 70, 89, 25));
         plannerBtn = new QPushButton(centralwidget);
         plannerBtn->setObjectName(QStringLiteral("plannerBtn"));
         plannerBtn->setEnabled(true);
@@ -123,7 +124,7 @@ public:
         sendPathBtn = new QPushButton(centralwidget);
         sendPathBtn->setObjectName(QStringLiteral("sendPathBtn"));
         sendPathBtn->setEnabled(false);
-        sendPathBtn->setGeometry(QRect(150, 40, 89, 25));
+        sendPathBtn->setGeometry(QRect(10, 40, 89, 25));
         adjustHeightBtn = new QPushButton(centralwidget);
         adjustHeightBtn->setObjectName(QStringLiteral("adjustHeightBtn"));
         adjustHeightBtn->setEnabled(true);
@@ -156,7 +157,13 @@ public:
         getCloudBtn = new QPushButton(centralwidget);
         getCloudBtn->setObjectName(QStringLiteral("getCloudBtn"));
         getCloudBtn->setEnabled(true);
-        getCloudBtn->setGeometry(QRect(10, 70, 89, 25));
+        getCloudBtn->setGeometry(QRect(150, 40, 89, 25));
+        cloudDownloadBar = new QProgressBar(centralwidget);
+        cloudDownloadBar->setObjectName(QStringLiteral("cloudDownloadBar"));
+        cloudDownloadBar->setEnabled(false);
+        cloudDownloadBar->setGeometry(QRect(150, 70, 91, 23));
+        cloudDownloadBar->setValue(0);
+        cloudDownloadBar->setTextVisible(false);
         UserInterface->setCentralWidget(centralwidget);
 
         retranslateUi(UserInterface);
@@ -196,4 +203,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACEAK9207_H
+#endif // USER_INTERFACEP25887_H

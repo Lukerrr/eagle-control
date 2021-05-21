@@ -43,6 +43,7 @@ set(SOURCE_EXE
     ${SRC}/core/Core.cpp
     ${SRC}/core/Configurator.cpp
     ${SRC}/core/Communicator.cpp
+    ${SRC}/core/DownloadManager.cpp
     ${SRC}/gui/UserInterface.cpp
     ${SRC}/gui/PlannerWidget.cpp
     ${SRC}/helpers/TimeUtils.cpp

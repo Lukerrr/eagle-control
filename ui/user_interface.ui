@@ -171,7 +171,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>40</y>
+      <y>70</y>
       <width>89</width>
       <height>25</height>
      </rect>
@@ -237,7 +237,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>10</x>
       <y>40</y>
       <width>89</width>
       <height>25</height>
@@ -358,14 +358,33 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>70</y>
+      <x>150</x>
+      <y>40</y>
       <width>89</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
      <string>Get cloud</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="cloudDownloadBar">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>70</y>
+      <width>91</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

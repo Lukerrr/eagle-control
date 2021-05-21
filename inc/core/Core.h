@@ -3,6 +3,7 @@
 #include "Singleton.h"
 #include "Communicator.h"
 #include "UserInterface.h"
+#include "DownloadManager.h"
 #include <atomic>
 #include <mutex>
 
@@ -12,16 +13,6 @@ using namespace std;
 
 class CCore : public TSingleton<CCore>
 {
-    struct SEvents
-    {
-        bool m_bArmDisarm = false;
-        bool m_bStartStop = false;
-        bool m_bSendMission = false;
-        bool m_bSendHeight = false;
-        bool m_bSendTolerance = false;
-        bool m_bGetCloud = false;
-    };
-
 public:
     ~CCore();
 
@@ -29,6 +20,10 @@ public:
     void Run();
 
     void Invalidate();
+
+    CDownloadManager* GetDownloadManager();
+    void UpdateCloudPercent();
+    void StopDownloadManager();
 
     void SetMissionPath(CLinePath2D path);
     void SetFlightHeight(float height);
@@ -39,17 +34,18 @@ public:
     void RequestSendMission();
     void RequestSendHeight();
     void RequestSendTolerance();
-    void RequestGetCloud();
+    void RequestGetCloud(string fileName);
+    void RequestStopGetCloud();
 
 private:
     QUserInterface* m_pUi = NULL;
+    CDownloadManager* m_pDownloadManager = NULL;
+
     uint64_t m_delayMs = 0;
 
     SMissionData m_missionData;
     float m_flightHeight;
     float m_flightTolerance;
-
-    SEvents m_eventsTriggers;
 
     atomic_bool m_bValid;
     mutex m_mutex;

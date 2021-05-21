@@ -317,12 +317,6 @@ void QPlannerWidget::UpdateMissionPath()
 
     SetMissionPath(GetGeoPath(m_missionPath));
 
-    QUserInterface* parent = static_cast<QUserInterface*>(parentWidget());
-    if(parent)
-    {
-        parent->SetEnableSendPathButton(bMissionValid);
-    }
-
     g_pCore->SetMissionPath(bMissionValid ? m_missionPath : CLinePath2D());
 }
 

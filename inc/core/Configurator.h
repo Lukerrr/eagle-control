@@ -9,10 +9,9 @@ using namespace std;
 
 struct SConfig
 {
-    double coreRate = 5.f;
+    double coreRate = 20.f;
     string droneIp = "127.0.0.1";
-    uint16_t dronePort = 54001;
-    uint32_t packetLen = 1024;
+    uint16_t dronePort = 54000;
 };
 
 class CConfigurator : public TSingleton<CConfigurator>

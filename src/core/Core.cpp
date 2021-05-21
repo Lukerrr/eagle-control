@@ -50,6 +50,7 @@ void CCore::Run()
 
     while(m_bValid.load() == true)
     {
+        m_mutex.lock();
         bool bConnected = g_pComm->Update();
         if(bConnected ^ bWasConnected)
         {
@@ -57,80 +58,17 @@ void CCore::Run()
             if(!bConnected)
             {
                 QCoreApplication::postEvent(m_pUi, new QDroneStateEvent(SDroneState()));
+                StopDownloadManager();
             }
             bWasConnected = bConnected;
         }
 
         if(bConnected)
         {
-            m_mutex.lock();
             SDroneState state = g_pComm->GetState();
             QCoreApplication::postEvent(m_pUi, new QDroneStateEvent(state));
-
-            // Dispatch command events from GUI
-            if(m_eventsTriggers.m_bArmDisarm)
-            {
-                m_eventsTriggers.m_bArmDisarm = false;
-                if(!state.bArmed)
-                {
-                    g_pComm->Send(SCmdArm());
-                }
-                else
-                {
-                    g_pComm->Send(SCmdDisarm());
-                }
-            }
-
-            if(m_eventsTriggers.m_bStartStop)
-            {
-                m_eventsTriggers.m_bStartStop = false;
-                if(state.systemState == ST_IDLE)
-                {
-                    if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
-                    {
-                        g_pComm->Send(SCmdStart());
-                        QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
-                    }
-                }
-                else if(state.systemState > ST_IDLE)
-                {
-                    g_pComm->Send(SCmdStop());
-                }
-            }
-
-            if(m_eventsTriggers.m_bSendMission)
-            {
-                m_eventsTriggers.m_bSendMission = false;
-                if( m_missionData.hash != -1 && state.systemState <= ST_IDLE)
-                {
-                    g_pComm->Send(m_missionData);
-                }
-            }
-
-            if(m_eventsTriggers.m_bSendHeight)
-            {
-                m_eventsTriggers.m_bSendHeight = false;
-                SCmdHeight cmd;
-                cmd.height = m_flightHeight;
-                g_pComm->Send(cmd);
-            }
-
-            if(m_eventsTriggers.m_bSendTolerance)
-            {
-                m_eventsTriggers.m_bSendTolerance = false;
-                SCmdTolerance cmd;
-                cmd.tolerance = m_flightTolerance;
-                g_pComm->Send(cmd);
-            }
-
-            if(m_eventsTriggers.m_bGetCloud)
-            {
-                m_eventsTriggers.m_bGetCloud = false;
-                SCmdGetCloud cmd;
-                g_pComm->Send(cmd);
-            }
-            m_mutex.unlock();
         }
+        m_mutex.unlock();
 
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delayMs));
     }
@@ -139,6 +77,34 @@ void CCore::Run()
 void CCore::Invalidate()
 {
     m_bValid.store(false);
+}
+
+CDownloadManager* CCore::GetDownloadManager()
+{
+    return m_pDownloadManager;
+}
+
+void CCore::UpdateCloudPercent()
+{
+    if(m_pDownloadManager)
+    {
+        int percent = m_pDownloadManager->GetPercent();
+        QCoreApplication::postEvent(m_pUi, new QGetCloudPercentEvent(percent));
+        if(percent >= 100)
+        {
+            StopDownloadManager();
+        }
+    }
+}
+
+void CCore::StopDownloadManager()
+{
+    if(m_pDownloadManager)
+    {
+        delete m_pDownloadManager;
+        m_pDownloadManager = NULL;
+        QCoreApplication::postEvent(m_pUi, new QGetCloudStopEvent());
+    }
 }
 
 void CCore::SetMissionPath(CLinePath2D path)
@@ -193,41 +159,91 @@ void CCore::SetFlightTolerance(float tolerance)
 void CCore::RequestArmDisarm()
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bArmDisarm = true;
+    SDroneState state = g_pComm->GetState();
+    if(!state.bArmed)
+    {
+        g_pComm->Send(SCmdArm());
+    }
+    else
+    {
+        g_pComm->Send(SCmdDisarm());
+    }
     m_mutex.unlock();
 }
 
 void CCore::RequestStartStop()
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bStartStop = true;
+    SDroneState state = g_pComm->GetState();
+    if(state.systemState == ST_IDLE)
+    {
+        if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
+        {
+            g_pComm->Send(SCmdStart());
+            QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
+        }
+    }
+    else if(state.systemState > ST_IDLE)
+    {
+        g_pComm->Send(SCmdStop());
+    }
     m_mutex.unlock();
 }
 
 void CCore::RequestSendMission()
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bSendMission = true;
+    SDroneState state = g_pComm->GetState();
+    if(m_missionData.hash != -1 && state.systemState <= ST_IDLE)
+    {
+        g_pComm->Send(m_missionData);
+    }
     m_mutex.unlock();
 }
 
 void CCore::RequestSendHeight()
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bSendHeight = true;
+    SCmdHeight cmd;
+    cmd.height = m_flightHeight;
+    g_pComm->Send(cmd);
     m_mutex.unlock();
 }
 
 void CCore::RequestSendTolerance()
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bSendTolerance = true;
+    SCmdTolerance cmd;
+    cmd.tolerance = m_flightTolerance;
+    g_pComm->Send(cmd);
     m_mutex.unlock();
 }
 
-void CCore::RequestGetCloud()
+void CCore::RequestGetCloud(string fileName)
 {
     m_mutex.lock();
-    m_eventsTriggers.m_bGetCloud = true;
+
+    if(m_pDownloadManager)
+    {
+        // Already downloading
+        return;
+    }
+
+    SDroneState state = g_pComm->GetState();
+    if(state.cloudSize > 0)
+    {
+        m_pDownloadManager = new CDownloadManager(state.cloudSize, fileName);
+        SCmdGetCloud cmd;
+        g_pComm->Send(cmd);
+
+        QCoreApplication::postEvent(m_pUi, new QGetCloudStartEvent());
+    }
+    m_mutex.unlock();
+}
+
+void CCore::RequestStopGetCloud()
+{
+    m_mutex.lock();
+    StopDownloadManager();
     m_mutex.unlock();
 }

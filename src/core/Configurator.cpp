@@ -62,12 +62,6 @@ bool CConfigurator::UpdateConfig()
         m_cfg.dronePort = atoi(entry.c_str());
     }
 
-    entry = entries["packet-length"];
-    if(entry.size() > 0)
-    {
-        m_cfg.packetLen = atoi(entry.c_str());
-    }
-
     return true;
 }
 

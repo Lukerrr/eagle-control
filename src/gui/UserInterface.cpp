@@ -3,6 +3,8 @@
 
 #include "Core.h"
 
+#include <QFileDialog>
+
 QUserInterface::QUserInterface(QWidget* parent /*= Q_NULLPTR*/)
 {
     m_ui.setupUi(this);
@@ -73,8 +75,6 @@ bool QUserInterface::event(QEvent* pEvent)
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");
         m_ui.startBtn->setEnabled(state.bArmed && (bCanStart || bCanStop));
 
-        m_ui.getCloudBtn->setEnabled(state.cloudSize > 0);
-
         QGeoCoordinate dronePos = QGeoCoordinate(state.lat, state.lon);
 
         m_plannerWidget.SetEditable(!bWorking);
@@ -115,6 +115,26 @@ bool QUserInterface::event(QEvent* pEvent)
         m_ui.adjustToleranceBtn->setEnabled(true);
         break;
     }
+    case UI_EVT_GET_CLOUD_START:
+    {
+        m_ui.getCloudBtn->setText("Cancel");
+        m_ui.cloudDownloadBar->setValue(0);
+        m_ui.cloudDownloadBar->setEnabled(true);
+        break;
+    }
+    case UI_EVT_GET_CLOUD_PERCENT:
+    {
+        QGetCloudPercentEvent* pCloudPercentEvent = static_cast<QGetCloudPercentEvent*>(pEvent);
+        m_ui.cloudDownloadBar->setValue(pCloudPercentEvent->m_percent);
+        break;
+    }
+    case UI_EVT_GET_CLOUD_STOP:
+    {
+        m_ui.getCloudBtn->setText("Get cloud");
+        m_ui.cloudDownloadBar->setValue(0);
+        m_ui.cloudDownloadBar->setEnabled(false);
+        break;
+    }
     default:
         break;
     }
@@ -129,10 +149,6 @@ void QUserInterface::closeEvent(QCloseEvent *event)
         m_plannerWidget.hide();
     }
     event->accept();
-}
-
-void QUserInterface::SetEnableSendPathButton(bool bState)
-{
 }
 
 void QUserInterface::OnArmBtnClicked()
@@ -164,7 +180,23 @@ void QUserInterface::OnAdjustToleranceBtnClicked()
 
 void QUserInterface::OnGetCloudBtnClicked()
 {
-    g_pCore->RequestGetCloud();
+    if(!m_ui.cloudDownloadBar->isEnabled())
+    {
+        QString filename = QFileDialog::getSaveFileName( 
+            this, 
+            tr("Save cloud as..."), 
+            QDir::currentPath(), 
+            tr("CSV files (*.csv);;All files (*.*)") );
+
+        if(!filename.isNull())
+        {
+            g_pCore->RequestGetCloud(filename.toStdString());
+        }
+    }
+    else
+    {
+        g_pCore->RequestStopGetCloud();
+    }
 }
 
 void QUserInterface::OnPlannerBtnClicked()

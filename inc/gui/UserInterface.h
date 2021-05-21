@@ -17,8 +17,6 @@ public:
     virtual bool event(QEvent* pEvent) override;
     virtual void closeEvent(QCloseEvent *event);
 
-    void SetEnableSendPathButton(bool bState);
-
 private:
     void OnArmBtnClicked();
     void OnStartBtnClicked();

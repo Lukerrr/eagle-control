@@ -14,6 +14,9 @@ enum EInterfaceEvent
     UI_EVT_MISSION_STARTED,
     UI_EVT_HEIGHT_CHANGED,
     UI_EVT_TOLERANCE_CHANGED,
+    UI_EVT_GET_CLOUD_START,
+    UI_EVT_GET_CLOUD_PERCENT,
+    UI_EVT_GET_CLOUD_STOP,
 };
 
 class QConnectionEvent : public QEvent
@@ -60,4 +63,26 @@ class QToleranceChangedEvent : public QEvent
 public:
     explicit QToleranceChangedEvent()
         : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_TOLERANCE_CHANGED) {};
+};
+
+class QGetCloudStartEvent : public QEvent
+{
+public:
+    explicit QGetCloudStartEvent()
+        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_GET_CLOUD_START) {};
+};
+
+class QGetCloudPercentEvent : public QEvent
+{
+public:
+    explicit QGetCloudPercentEvent(int percent)
+        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_GET_CLOUD_PERCENT), m_percent(percent) {};
+    int m_percent;
+};
+
+class QGetCloudStopEvent : public QEvent
+{
+public:
+    explicit QGetCloudStopEvent()
+        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_GET_CLOUD_STOP) {};
 };
