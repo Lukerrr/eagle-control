@@ -1,5 +1,4 @@
 #include "Log.h"
-#include "Core.h"
 #include "Communicator.h"
 #include "Configurator.h"
 
@@ -13,6 +12,8 @@
 #pragma comment(lib, "ws2_32.lib")
 #else
 #endif
+
+#include "Core.h"
 
 CCommunicator::CCommunicator()
 {
@@ -109,7 +110,7 @@ bool CCommunicator::Update()
     do
     {
         ERspType msgType;
-        dataLen = recv(m_gsSocket, &msgType, sizeof(msgType), 0);
+        dataLen = recv(m_gsSocket, (char*)&msgType, sizeof(msgType), 0);
 
         if (dataLen == 0)
         {
@@ -125,14 +126,14 @@ bool CCommunicator::Update()
             case RSP_DRONE_STATE:
             {
                 // Save drone state
-                recv(m_gsSocket, &m_droneState, sizeof(m_droneState), 0);
+                recv(m_gsSocket, (char*)&m_droneState, sizeof(m_droneState), 0);
                 break;
             }
             case RSP_POINT_CLOUD:
             {
                 // Save point cloud chunk
                 SPointCloud cloud;
-                recv(m_gsSocket, &cloud, sizeof(cloud), 0);
+                recv(m_gsSocket, (char*)&cloud, sizeof(cloud), 0);
                 CDownloadManager* pDownloadManager = g_pCore->GetDownloadManager();
                 if(pDownloadManager)
                 {
