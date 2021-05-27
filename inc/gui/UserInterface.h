@@ -14,8 +14,9 @@ public:
     QUserInterface(QWidget* parent = Q_NULLPTR);
     ~QUserInterface();
 
-    virtual bool event(QEvent* pEvent) override;
-    virtual void closeEvent(QCloseEvent *event);
+    virtual bool event(QEvent* event) override;
+    virtual void closeEvent(QCloseEvent* event) override;
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private:
     void OnArmBtnClicked();

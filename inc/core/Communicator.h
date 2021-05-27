@@ -15,6 +15,7 @@ public:
     ~CCommunicator();
 
     bool Update();
+    bool IsConnected();
     SDroneState GetState();
 
     template<typename T>

@@ -114,7 +114,7 @@ public:
         heightSpinBox = new QDoubleSpinBox(centralwidget);
         heightSpinBox->setObjectName(QStringLiteral("heightSpinBox"));
         heightSpinBox->setGeometry(QRect(110, 100, 71, 21));
-        heightSpinBox->setMinimum(1.8);
+        heightSpinBox->setMinimum(1.0);
         heightSpinBox->setMaximum(8);
         heightSpinBox->setSingleStep(0.01);
         heightSpinBox->setValue(2);

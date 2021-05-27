@@ -61,9 +61,6 @@ void CCommunicator::Reset()
         // Set non-blocking mode
 #ifdef __linux__
         fcntl(m_gsSocket, F_SETFL, fcntl(m_gsSocket, F_GETFL, 0) | O_NONBLOCK);
-#elif _WIN32
-        u_long mode = 1;
-        ioctlsocket(m_gsSocket, FIONBIO, &mode);
 #endif
         CLog::Log(LOG_INFO, "CCommunicator: socket created successfully");
     }
@@ -81,7 +78,11 @@ bool CCommunicator::TryConnect()
     m_bConnected = connect(m_gsSocket, (sockaddr*)&hint, sizeof(hint)) != -1;
 
 #ifdef _WIN32
-    m_bConnected |= WSAGetLastError() == 10035;
+    if(m_bConnected)
+    {
+        u_long mode = 1;
+        ioctlsocket(m_gsSocket, FIONBIO, &mode);
+    }
 #endif
 
     return m_bConnected;
@@ -89,12 +90,18 @@ bool CCommunicator::TryConnect()
 
 bool CCommunicator::SendInternal(char* pData, int len)
 {
+    if(!m_bConnected)
+    {
+        return false;
+    }
+
     if (send(m_gsSocket, pData, len, 0) == -1)
     {
         CLog::Log(LOG_WARNING, "CCommunicator: cannot send a packet");
         Reset();
         return false;
     }
+    
     return true;
 }
 
@@ -118,6 +125,10 @@ bool CCommunicator::Update()
             CLog::Log(LOG_INFO, "CCommunicator: disconnected");
             m_bConnected = false;
             m_droneState = SDroneState();
+            #ifdef _WIN32
+                u_long mode = 0;
+                ioctlsocket(m_gsSocket, FIONBIO, &mode);
+            #endif
         }
         else if(dataLen > 0)
         {
@@ -149,6 +160,11 @@ bool CCommunicator::Update()
 
     } while (dataLen > 0);
 
+    return m_bConnected;
+}
+
+bool CCommunicator::IsConnected()
+{
     return m_bConnected;
 }
 

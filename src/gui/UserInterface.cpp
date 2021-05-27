@@ -33,13 +33,13 @@ QUserInterface::~QUserInterface()
 {
 }
 
-bool QUserInterface::event(QEvent* pEvent)
+bool QUserInterface::event(QEvent* event)
 {
-    switch(pEvent->type())
+    switch(event->type())
     {
     case UI_EVT_CONN:
     {
-        QConnectionEvent* pConnEvt = static_cast<QConnectionEvent*>(pEvent);
+        QConnectionEvent* pConnEvt = static_cast<QConnectionEvent*>(event);
         bool bConnected = pConnEvt->m_bConnected;
 
         m_ui.connStateLabel->setText(bConnected ? "Connected" : "Disconnected");
@@ -50,7 +50,7 @@ bool QUserInterface::event(QEvent* pEvent)
     }
     case UI_EVT_DRONE_STATE:
     {
-        QDroneStateEvent* pStateEvt = static_cast<QDroneStateEvent*>(pEvent);
+        QDroneStateEvent* pStateEvt = static_cast<QDroneStateEvent*>(event);
         SDroneState state = pStateEvt->m_state;
         
         QString posStr, rotStr, cloudStr, modeStr;
@@ -95,7 +95,7 @@ bool QUserInterface::event(QEvent* pEvent)
     }
     case UI_EVT_MISSION_CHANGED:
     {
-        QMissionChangedEvent* pMissionEvt = static_cast<QMissionChangedEvent*>(pEvent);
+        QMissionChangedEvent* pMissionEvt = static_cast<QMissionChangedEvent*>(event);
         m_currentMission = pMissionEvt->m_data;
         m_ui.sendPathBtn->setEnabled(!pMissionEvt->m_bWorking && m_currentMission.hash != -1);
         break;
@@ -124,7 +124,7 @@ bool QUserInterface::event(QEvent* pEvent)
     }
     case UI_EVT_GET_CLOUD_PERCENT:
     {
-        QGetCloudPercentEvent* pCloudPercentEvent = static_cast<QGetCloudPercentEvent*>(pEvent);
+        QGetCloudPercentEvent* pCloudPercentEvent = static_cast<QGetCloudPercentEvent*>(event);
         m_ui.cloudDownloadBar->setValue(pCloudPercentEvent->m_percent);
         break;
     }
@@ -139,16 +139,38 @@ bool QUserInterface::event(QEvent* pEvent)
         break;
     }
 
-    return QMainWindow::event(pEvent);
+    return QMainWindow::event(event);
 }
 
-void QUserInterface::closeEvent(QCloseEvent *event)
+void QUserInterface::closeEvent(QCloseEvent* event)
 {
     if(m_plannerWidget.isVisible())
     {
         m_plannerWidget.hide();
     }
     event->accept();
+}
+
+void QUserInterface::keyPressEvent(QKeyEvent* event)
+{
+    QMainWindow::keyPressEvent(event);
+
+    if(!m_ui.centralwidget->isEnabled())
+    {
+        return;
+    }
+
+    switch(event->key())
+    {
+    case Qt::Key_A:
+        OnArmBtnClicked();
+        break;
+    case Qt::Key_S:
+        OnStartBtnClicked();
+        break;
+    default:
+        break;
+    }
 }
 
 void QUserInterface::OnArmBtnClicked()
