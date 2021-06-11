@@ -4,6 +4,7 @@
 #include "Core.h"
 
 #include <QFileDialog>
+#include <QtGui/QPalette>
 
 QUserInterface::QUserInterface(QWidget* parent /*= Q_NULLPTR*/)
 {
@@ -44,8 +45,6 @@ bool QUserInterface::event(QEvent* event)
 
         m_ui.connStateLabel->setText(bConnected ? "Connected" : "Disconnected");
         m_ui.centralwidget->setEnabled(bConnected);
-
-        m_plannerWidget.SetDroneConnected(bConnected);
         break;
     }
     case UI_EVT_DRONE_STATE:
@@ -80,6 +79,7 @@ bool QUserInterface::event(QEvent* event)
         m_plannerWidget.SetEditable(!bWorking);
         m_plannerWidget.SetDronePos(dronePos);
         m_plannerWidget.SetDroneHeading(-state.heading);
+        m_plannerWidget.SetDroneConnected(state.bGlobalPos);
 
         if(bWorking)
         {

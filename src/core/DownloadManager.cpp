@@ -44,6 +44,7 @@ void CDownloadManager::AppendChunk(SPointCloud chunk)
     {
         m_cloud.push_back(chunk.cloud[i]);
     }
+
     CLog::Log(LOG_INFO, "CDownloadManager: wrote a chunk with %d points | %d/%d (%d%)",
         chunk.cloudSize, m_cloud.size(), m_cloudSize, GetPercent());
 }

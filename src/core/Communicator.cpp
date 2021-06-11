@@ -58,8 +58,8 @@ void CCommunicator::Reset()
     }
     else
     {
-        // Set non-blocking mode
 #ifdef __linux__
+        // Set non-blocking mode
         fcntl(m_gsSocket, F_SETFL, fcntl(m_gsSocket, F_GETFL, 0) | O_NONBLOCK);
 #endif
         CLog::Log(LOG_INFO, "CCommunicator: socket created successfully");
@@ -77,15 +77,27 @@ bool CCommunicator::TryConnect()
 
     m_bConnected = connect(m_gsSocket, (sockaddr*)&hint, sizeof(hint)) != -1;
 
-#ifdef _WIN32
     if(m_bConnected)
     {
+#ifdef _WIN32
         u_long mode = 1;
         ioctlsocket(m_gsSocket, FIONBIO, &mode);
-    }
 #endif
+        m_lastDataStamp = Millis();
+    }
 
     return m_bConnected;
+}
+
+void CCommunicator::Disconnect()
+{
+    CLog::Log(LOG_INFO, "CCommunicator: disconnected");
+    m_bConnected = false;
+    m_droneState = SDroneState();
+#ifdef _WIN32
+    u_long mode = 0;
+    ioctlsocket(m_gsSocket, FIONBIO, &mode);
+#endif
 }
 
 bool CCommunicator::SendInternal(char* pData, int len)
@@ -114,6 +126,7 @@ bool CCommunicator::Update()
 
     // Read all received packets
     int dataLen = 0;
+    bool bNoData = true;
     do
     {
         ERspType msgType;
@@ -122,16 +135,12 @@ bool CCommunicator::Update()
         if (dataLen == 0)
         {
             // Disconnected
-            CLog::Log(LOG_INFO, "CCommunicator: disconnected");
-            m_bConnected = false;
-            m_droneState = SDroneState();
-            #ifdef _WIN32
-                u_long mode = 0;
-                ioctlsocket(m_gsSocket, FIONBIO, &mode);
-            #endif
+            Disconnect();
+            return false;
         }
         else if(dataLen > 0)
         {
+            bNoData = false;
             switch(msgType)
             {
             case RSP_DRONE_STATE:
@@ -160,7 +169,20 @@ bool CCommunicator::Update()
 
     } while (dataLen > 0);
 
-    return m_bConnected;
+    if(bNoData)
+    {
+        if(Millis() - m_lastDataStamp > g_pConf->GetConfig().autoDisconnectTime)
+        {
+            Disconnect();
+            return false;
+        }
+    }
+    else
+    {
+        m_lastDataStamp = Millis();
+    }
+
+    return true;
 }
 
 bool CCommunicator::IsConnected()

@@ -62,6 +62,12 @@ bool CConfigurator::UpdateConfig()
         m_cfg.dronePort = atoi(entry.c_str());
     }
 
+    entry = entries["auto-disconnect-time"];
+    if(entry.size() > 0)
+    {
+        m_cfg.autoDisconnectTime = atoi(entry.c_str());
+    }
+
     return true;
 }
 

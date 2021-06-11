@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Singleton.h"
+#include "TimeUtils.h"
 #include "CmdMsgs.h"
 #include "RspMsgs.h"
 
@@ -26,12 +27,14 @@ private:
     void Invalidate();
 
     bool TryConnect();
+    void Disconnect();
     bool SendInternal(char* pData, int len);
 
     SDroneState m_droneState;
 
     int m_gsSocket = -1;
     bool m_bConnected = false;
+    TTime m_lastDataStamp = -1;
 };
 
 template<typename T>

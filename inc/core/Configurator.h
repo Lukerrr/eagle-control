@@ -12,6 +12,7 @@ struct SConfig
     double coreRate = 20.f;
     string droneIp = "127.0.0.1";
     uint16_t dronePort = 54000;
+    uint32_t autoDisconnectTime = 10000;
 };
 
 class CConfigurator : public TSingleton<CConfigurator>

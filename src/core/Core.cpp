@@ -94,6 +94,11 @@ void CCore::UpdateCloudPercent()
         {
             StopDownloadManager();
         }
+        else
+        {
+            SCmdGetCloudNext cmd;
+            g_pComm->Send(cmd);
+        }
     }
 }
 
@@ -104,6 +109,9 @@ void CCore::StopDownloadManager()
         delete m_pDownloadManager;
         m_pDownloadManager = NULL;
         QCoreApplication::postEvent(m_pUi, new QGetCloudStopEvent());
+
+        SCmdGetCloudEnd cmd;
+        g_pComm->Send(cmd);
     }
 }
 
@@ -233,7 +241,7 @@ void CCore::RequestGetCloud(string fileName)
     if(state.cloudSize > 0)
     {
         m_pDownloadManager = new CDownloadManager(state.cloudSize, fileName);
-        SCmdGetCloud cmd;
+        SCmdGetCloudBegin cmd;
         g_pComm->Send(cmd);
 
         QCoreApplication::postEvent(m_pUi, new QGetCloudStartEvent());

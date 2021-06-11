@@ -422,6 +422,7 @@ void QPlannerWidget::SetDroneConnected(const bool& bDroneConnected)
         return;
     }
     m_bDroneConnected = bDroneConnected;
+    m_ui.noGpsLabel->setVisible(!bDroneConnected);
     emit droneConnectionChanged();
 }
 
