@@ -69,7 +69,7 @@ bool QUserInterface::event(QEvent* event)
         m_ui.armBtn->setText(state.bArmed ? "Disarm" : "Arm");
 
         bool bWorking = state.systemState > ST_IDLE;
-        bool bCanStart = state.systemState == ST_IDLE && state.missionHash == m_currentMission.hash && m_currentMission.hash != -1;
+        bool bCanStart = state.systemState == ST_IDLE; //&& state.missionHash == m_currentMission.hash && m_currentMission.hash != -1;
         bool bCanStop = state.systemState == ST_WORKING;
 
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");

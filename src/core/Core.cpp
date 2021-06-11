@@ -140,7 +140,7 @@ void CCore::SetMissionPath(CLinePath2D path)
 
 void CCore::SetFlightHeight(float height)
 {
-    if(height >= 1.5f && m_flightHeight != height)
+    if(m_flightHeight != height)
     {
         m_flightHeight = height;
         QCoreApplication::postEvent(m_pUi, new QHeightChangedEvent());
@@ -177,7 +177,7 @@ void CCore::RequestStartStop()
     SDroneState state = g_pComm->GetState();
     if(state.systemState == ST_IDLE)
     {
-        if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
+        //if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
         {
             g_pComm->Send(SCmdStart());
             QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
