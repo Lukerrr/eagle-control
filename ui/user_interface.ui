@@ -83,19 +83,6 @@
       <string>Cloud size: 0 (0 B)</string>
      </property>
     </widget>
-    <widget class="QLabel" name="droneStateMode">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>90</y>
-       <width>251</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Offboard: disabled</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="chargeLabel">
      <property name="enabled">
       <bool>true</bool>

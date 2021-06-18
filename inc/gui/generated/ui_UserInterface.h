@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfaceBvRDRr.ui'
+** Form generated from reading UI file 'user_interfaceTdkYMz.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.8
+** Created by: Qt User Interface Compiler version 5.12.10
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACEBVRDRR_H
-#define USER_INTERFACEBVRDRR_H
+#ifndef USER_INTERFACETDKYMZ_H
+#define USER_INTERFACETDKYMZ_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -32,7 +32,6 @@ public:
     QLabel *droneStatePos;
     QLabel *droneStateRot;
     QLabel *droneStateCloud;
-    QLabel *droneStateMode;
     QLabel *chargeLabel;
     QProgressBar *chargeBar;
     QPushButton *armBtn;
@@ -80,9 +79,6 @@ public:
         droneStateCloud = new QLabel(droneStateBox);
         droneStateCloud->setObjectName(QString::fromUtf8("droneStateCloud"));
         droneStateCloud->setGeometry(QRect(10, 70, 251, 21));
-        droneStateMode = new QLabel(droneStateBox);
-        droneStateMode->setObjectName(QString::fromUtf8("droneStateMode"));
-        droneStateMode->setGeometry(QRect(10, 90, 251, 21));
         chargeLabel = new QLabel(droneStateBox);
         chargeLabel->setObjectName(QString::fromUtf8("chargeLabel"));
         chargeLabel->setEnabled(true);
@@ -179,7 +175,6 @@ public:
         droneStatePos->setText(QApplication::translate("UserInterface", "Position: [0.0, 0.0, 0.0]", nullptr));
         droneStateRot->setText(QApplication::translate("UserInterface", "Rotation: [0.0, 0.0, 0.0]", nullptr));
         droneStateCloud->setText(QApplication::translate("UserInterface", "Cloud size: 0 (0 B)", nullptr));
-        droneStateMode->setText(QApplication::translate("UserInterface", "Offboard: disabled", nullptr));
         chargeLabel->setText(QApplication::translate("UserInterface", "Battery charge:", nullptr));
         armBtn->setText(QApplication::translate("UserInterface", "Arm", nullptr));
         connStateLabel->setText(QApplication::translate("UserInterface", "Disconnected", nullptr));
@@ -202,4 +197,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACEBVRDRR_H
+#endif // USER_INTERFACETDKYMZ_H

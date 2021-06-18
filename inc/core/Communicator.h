@@ -20,7 +20,7 @@ public:
     SDroneState GetState();
 
     template<typename T>
-    bool Send(T msg);
+    void Send(T msg);
 
 private:
     void Reset();
@@ -28,7 +28,9 @@ private:
 
     bool TryConnect();
     void Disconnect();
-    bool SendInternal(char* pData, int len);
+
+    int RecvInternal(int socket, void* buf, size_t len);
+    void SendInternal(char* pData, int len);
 
     SDroneState m_droneState;
 
@@ -38,13 +40,12 @@ private:
 };
 
 template<typename T>
-bool CCommunicator::Send(T msg)
+void CCommunicator::Send(T msg)
 {
     int len = sizeof(T) + sizeof(EMsgType);
     char* buf = new char[len];
     memcpy(buf, &T::s_type, sizeof(EMsgType));
     memcpy(buf + sizeof(EMsgType), &msg, sizeof(T));
-    bool bResult = SendInternal(buf, len);
+    SendInternal(buf, len);
     delete[] buf;
-    return bResult;
 }

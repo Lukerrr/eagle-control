@@ -90,15 +90,6 @@ void CCore::UpdateCloudPercent()
     {
         int percent = m_pDownloadManager->GetPercent();
         QCoreApplication::postEvent(m_pUi, new QGetCloudPercentEvent(percent));
-        if(percent >= 100)
-        {
-            StopDownloadManager();
-        }
-        else
-        {
-            SCmdGetCloudNext cmd;
-            g_pComm->Send(cmd);
-        }
     }
 }
 
@@ -109,9 +100,6 @@ void CCore::StopDownloadManager()
         delete m_pDownloadManager;
         m_pDownloadManager = NULL;
         QCoreApplication::postEvent(m_pUi, new QGetCloudStopEvent());
-
-        SCmdGetCloudEnd cmd;
-        g_pComm->Send(cmd);
     }
 }
 
@@ -185,7 +173,7 @@ void CCore::RequestStartStop()
     SDroneState state = g_pComm->GetState();
     if(state.systemState == ST_IDLE)
     {
-        //if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
+        if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
         {
             g_pComm->Send(SCmdStart());
             QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
@@ -241,7 +229,7 @@ void CCore::RequestGetCloud(string fileName)
     if(state.cloudSize > 0)
     {
         m_pDownloadManager = new CDownloadManager(state.cloudSize, fileName);
-        SCmdGetCloudBegin cmd;
+        SCmdGetCloud cmd;
         g_pComm->Send(cmd);
 
         QCoreApplication::postEvent(m_pUi, new QGetCloudStartEvent());

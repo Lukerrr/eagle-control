@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'planner_widgetNfwtSf.ui'
+** Form generated from reading UI file 'planner_widgetpKYnJG.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.8
+** Created by: Qt User Interface Compiler version 5.12.10
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef PLANNER_WIDGETNFWTSF_H
-#define PLANNER_WIDGETNFWTSF_H
+#ifndef PLANNER_WIDGETPKYNJG_H
+#define PLANNER_WIDGETPKYNJG_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -74,4 +74,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // PLANNER_WIDGETNFWTSF_H
+#endif // PLANNER_WIDGETPKYNJG_H

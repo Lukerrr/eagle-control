@@ -4,7 +4,7 @@
 
 #ifdef __linux__
 #include <arpa/inet.h>
-#include <sys/fcntl.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #elif _WIN32
 #include <winsock2.h>
@@ -38,8 +38,10 @@ void CCommunicator::Invalidate()
     if(m_gsSocket != -1)
     {
 #ifdef __linux__
+        shutdown(m_gsSocket, SHUT_RDWR);
         close(m_gsSocket);
 #elif _WIN32
+        shutdown(m_gsSocket, SD_BOTH);
         closesocket(m_gsSocket);
 #endif
         m_gsSocket = -1;
@@ -58,10 +60,6 @@ void CCommunicator::Reset()
     }
     else
     {
-#ifdef __linux__
-        // Set non-blocking mode
-        fcntl(m_gsSocket, F_SETFL, fcntl(m_gsSocket, F_GETFL, 0) | O_NONBLOCK);
-#endif
         CLog::Log(LOG_INFO, "CCommunicator: socket created successfully");
     }
 }
@@ -79,10 +77,6 @@ bool CCommunicator::TryConnect()
 
     if(m_bConnected)
     {
-#ifdef _WIN32
-        u_long mode = 1;
-        ioctlsocket(m_gsSocket, FIONBIO, &mode);
-#endif
         m_lastDataStamp = Millis();
     }
 
@@ -94,27 +88,44 @@ void CCommunicator::Disconnect()
     CLog::Log(LOG_INFO, "CCommunicator: disconnected");
     m_bConnected = false;
     m_droneState = SDroneState();
-#ifdef _WIN32
-    u_long mode = 0;
-    ioctlsocket(m_gsSocket, FIONBIO, &mode);
-#endif
+    Reset();
 }
 
-bool CCommunicator::SendInternal(char* pData, int len)
+int CCommunicator::RecvInternal(int socket, void* buf, size_t len)
+{
+    u_long availBytes = 0;
+#ifdef __linux__
+    int ioctlRes = ioctl(socket, FIONREAD, &availBytes);
+#elif _WIN32
+    int ioctlRes = ioctlsocket(socket, FIONREAD, &availBytes);
+#endif
+
+    if(ioctlRes == -1 || availBytes == 0)
+    {
+        return -1;
+    }
+
+    if(len > availBytes)
+    {
+        CLog::Log(LOG_WARNING, "CCommunicator: requested receive more bytes than available (%lu > %lu)", len, availBytes);
+        len = availBytes;
+    }
+
+    return recv(socket, (char*)buf, len, 0);
+}
+
+void CCommunicator::SendInternal(char* pData, int len)
 {
     if(!m_bConnected)
     {
-        return false;
+        return;
     }
 
     if (send(m_gsSocket, pData, len, 0) == -1)
     {
         CLog::Log(LOG_WARNING, "CCommunicator: cannot send a packet");
         Reset();
-        return false;
     }
-    
-    return true;
 }
 
 bool CCommunicator::Update()
@@ -125,12 +136,12 @@ bool CCommunicator::Update()
     }
 
     // Read all received packets
-    int dataLen = 0;
+    int dataLen;
     bool bNoData = true;
     do
     {
         ERspType msgType;
-        dataLen = recv(m_gsSocket, (char*)&msgType, sizeof(msgType), 0);
+        dataLen = RecvInternal(m_gsSocket, (char*)&msgType, sizeof(msgType));
 
         if (dataLen == 0)
         {
@@ -146,14 +157,14 @@ bool CCommunicator::Update()
             case RSP_DRONE_STATE:
             {
                 // Save drone state
-                recv(m_gsSocket, (char*)&m_droneState, sizeof(m_droneState), 0);
+                RecvInternal(m_gsSocket, (char*)&m_droneState, sizeof(m_droneState));
                 break;
             }
-            case RSP_POINT_CLOUD:
+            case RSP_CLOUD_CHUNK:
             {
                 // Save point cloud chunk
                 SPointCloud cloud;
-                recv(m_gsSocket, (char*)&cloud, sizeof(cloud), 0);
+                RecvInternal(m_gsSocket, (char*)&cloud, sizeof(cloud));
                 CDownloadManager* pDownloadManager = g_pCore->GetDownloadManager();
                 if(pDownloadManager)
                 {
@@ -162,17 +173,23 @@ bool CCommunicator::Update()
                 }
                 break;
             }
+            case RSP_CLOUD_END:
+            {
+                // Stop saving cloud
+                g_pCore->StopDownloadManager();
+                break;
+            }
             default:
                 break;
             }
         }
-
     } while (dataLen > 0);
 
     if(bNoData)
     {
         if(Millis() - m_lastDataStamp > g_pConf->GetConfig().autoDisconnectTime)
         {
+            CLog::Log(LOG_INFO, "CCommunicator: disconnecting on timeout...");
             Disconnect();
             return false;
         }

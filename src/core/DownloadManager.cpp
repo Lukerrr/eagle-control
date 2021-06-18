@@ -40,13 +40,12 @@ CDownloadManager::~CDownloadManager()
 void CDownloadManager::AppendChunk(SPointCloud chunk)
 {
     int i = 0;
-    for(; m_cloud.size() <= m_cloudSize && i < chunk.cloudSize; ++i)
+    for(; m_cloud.size() <= m_cloudSize && i < chunk.size; ++i)
     {
         m_cloud.push_back(chunk.cloud[i]);
     }
-
-    CLog::Log(LOG_INFO, "CDownloadManager: wrote a chunk with %d points | %d/%d (%d%)",
-        chunk.cloudSize, m_cloud.size(), m_cloudSize, GetPercent());
+    CLog::Log(LOG_INFO, "CDownloadManager: wrote a chunk with %d points | %d/%d (%d percent)",
+        chunk.size, m_cloud.size(), m_cloudSize, GetPercent());
 }
 
 int CDownloadManager::GetPercent()
