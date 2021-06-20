@@ -31,6 +31,8 @@ private:
     void OnToleranceChanged(double val);
     void OnPathSpacingChanged(double val);
 
+    QString FormatBytes(uint32_t bytesNum);
+
     Ui::UserInterface m_ui;
     QPlannerWidget m_plannerWidget;
     SMissionData m_currentMission;

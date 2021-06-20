@@ -12,8 +12,6 @@ enum EInterfaceEvent
     UI_EVT_DRONE_STATE,
     UI_EVT_MISSION_CHANGED,
     UI_EVT_MISSION_STARTED,
-    UI_EVT_HEIGHT_CHANGED,
-    UI_EVT_TOLERANCE_CHANGED,
     UI_EVT_GET_CLOUD_START,
     UI_EVT_GET_CLOUD_PERCENT,
     UI_EVT_GET_CLOUD_STOP,
@@ -49,20 +47,6 @@ class QMissionStartedEvent : public QEvent
 public:
     explicit QMissionStartedEvent()
         : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_MISSION_STARTED) {};
-};
-
-class QHeightChangedEvent : public QEvent
-{
-public:
-    explicit QHeightChangedEvent()
-        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_HEIGHT_CHANGED) {};
-};
-
-class QToleranceChangedEvent : public QEvent
-{
-public:
-    explicit QToleranceChangedEvent()
-        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_TOLERANCE_CHANGED) {};
 };
 
 class QGetCloudStartEvent : public QEvent

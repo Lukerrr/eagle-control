@@ -112,7 +112,7 @@ void CCore::SetMissionPath(CLinePath2D path)
         m_missionData.pathSize = m_missionData.pathMaxSize;
     }
 
-    for(int i = 0; i < m_missionData.pathSize; ++i)
+    for(uint32_t i = 0; i < m_missionData.pathSize; ++i)
     {
         m_missionData.path[i].x = path.GetPoint(i).x;
         m_missionData.path[i].y = path.GetPoint(i).y;
@@ -136,20 +136,22 @@ void CCore::SetMissionPath(CLinePath2D path)
 
 void CCore::SetFlightHeight(float height)
 {
+    m_mutex.lock();
     if(m_flightHeight != height)
     {
         m_flightHeight = height;
-        QCoreApplication::postEvent(m_pUi, new QHeightChangedEvent());
     }
+    m_mutex.unlock();
 }
 
 void CCore::SetFlightTolerance(float tolerance)
 {
-    if(tolerance > 0.f && m_flightTolerance != tolerance)
+    m_mutex.lock();
+    if(m_flightTolerance != tolerance)
     {
         m_flightTolerance = tolerance;
-        QCoreApplication::postEvent(m_pUi, new QToleranceChangedEvent());
     }
+    m_mutex.unlock();
 }
 
 void CCore::RequestArmDisarm()

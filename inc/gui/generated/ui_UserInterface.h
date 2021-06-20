@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfaceTdkYMz.ui'
+** Form generated from reading UI file 'user_interfacezsUAGh.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.12.10
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACETDKYMZ_H
-#define USER_INTERFACETDKYMZ_H
+#ifndef USER_INTERFACEZSUAGH_H
+#define USER_INTERFACEZSUAGH_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -108,7 +108,7 @@ public:
         heightSpinBox = new QDoubleSpinBox(centralwidget);
         heightSpinBox->setObjectName(QString::fromUtf8("heightSpinBox"));
         heightSpinBox->setGeometry(QRect(110, 100, 71, 21));
-        heightSpinBox->setMinimum(1.800000000000000);
+        heightSpinBox->setMinimum(0.500000000000000);
         heightSpinBox->setMaximum(8.000000000000000);
         heightSpinBox->setSingleStep(0.010000000000000);
         heightSpinBox->setValue(2.000000000000000);
@@ -197,4 +197,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACETDKYMZ_H
+#endif // USER_INTERFACEZSUAGH_H

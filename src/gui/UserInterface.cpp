@@ -55,7 +55,10 @@ bool QUserInterface::event(QEvent* event)
         QString posStr, rotStr, cloudStr;
         posStr.sprintf("Position: [%.2f, %.2f, %.2f]", state.x, state.y, state.z);
         rotStr.sprintf("Rotation: [%.2f, %.2f, %.2f]", state.roll, state.pitch, state.yaw);
-        cloudStr.sprintf("Cloud size: %d (%d B)", state.cloudSize, sizeof(SPointCloud::CloudPt) * state.cloudSize);
+
+        cloudStr.sprintf("Cloud size: %d (%s)",
+            state.cloudSize,
+            FormatBytes(sizeof(SPointCloud::CloudPt) * state.cloudSize).toStdString().c_str());
 
         m_ui.droneStatePos->setText(posStr);
         m_ui.droneStateRot->setText(rotStr);
@@ -101,16 +104,6 @@ bool QUserInterface::event(QEvent* event)
     case UI_EVT_MISSION_STARTED:
     {
         m_plannerWidget.SetMovementPath(QGeoPath());
-        break;
-    }
-    case UI_EVT_HEIGHT_CHANGED:
-    {
-        m_ui.adjustHeightBtn->setEnabled(true);
-        break;
-    }
-    case UI_EVT_TOLERANCE_CHANGED:
-    {
-        m_ui.adjustToleranceBtn->setEnabled(true);
         break;
     }
     case UI_EVT_GET_CLOUD_START:
@@ -189,13 +182,11 @@ void QUserInterface::OnSendPathBtnClicked()
 void QUserInterface::OnAdjustHeightBtnClicked()
 {
     g_pCore->RequestSendHeight();
-    m_ui.adjustHeightBtn->setEnabled(false);
 }
 
 void QUserInterface::OnAdjustToleranceBtnClicked()
 {
     g_pCore->RequestSendTolerance();
-    m_ui.adjustToleranceBtn->setEnabled(false);
 }
 
 void QUserInterface::OnGetCloudBtnClicked()
@@ -244,4 +235,28 @@ void QUserInterface::OnHeightChanged(double val)
 void QUserInterface::OnToleranceChanged(double val)
 {
     g_pCore->SetFlightTolerance(val);
+}
+
+QString QUserInterface::FormatBytes(uint32_t bytesNum)
+{
+    QString unit("bytes");
+
+    if(bytesNum < 1024)
+    {
+        // No conversion
+        return QString().setNum(bytesNum) + " " + unit;
+    }
+
+    QStringList list;
+    list << "KB" << "MB" << "GB" << "TB";
+    QStringListIterator i(list);
+
+    float num = bytesNum;
+    while(num >= 1024.f && i.hasNext())
+    {
+        unit = i.next();
+        num /= 1024.f;
+    }
+
+    return QString().setNum(num, 'f', 2) + " " + unit;
 }
