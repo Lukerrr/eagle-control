@@ -2,6 +2,7 @@
 #include "InterfaceEvents.h"
 
 #include "Core.h"
+#include "MathUtils.h"
 
 #include <QFileDialog>
 #include <QtGui/QPalette>
@@ -17,17 +18,14 @@ QUserInterface::QUserInterface(QWidget* parent /*= Q_NULLPTR*/)
     connect(m_ui.sendPathBtn, &QPushButton::clicked, this, &QUserInterface::OnSendPathBtnClicked);
     connect(m_ui.adjustHeightBtn, &QPushButton::clicked, this, &QUserInterface::OnAdjustHeightBtnClicked);
     connect(m_ui.adjustToleranceBtn, &QPushButton::clicked, this, &QUserInterface::OnAdjustToleranceBtnClicked);
+    connect(m_ui.adjustDensityBtn, &QPushButton::clicked, this, &QUserInterface::OnAdjustDensityBtnClicked);
     connect(m_ui.getCloudBtn, &QPushButton::clicked, this, &QUserInterface::OnGetCloudBtnClicked);
 
     connect(m_ui.pathSpacingSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &QUserInterface::OnPathSpacingChanged);
-    connect(m_ui.heightSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &QUserInterface::OnHeightChanged);
-    connect(m_ui.toleranceSpinBox, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &QUserInterface::OnToleranceChanged);
 
     setFixedSize(geometry().width(), geometry().height());
 
     m_plannerWidget.SetMissionSpacing(m_ui.pathSpacingSpinBox->value());
-    g_pCore->SetFlightHeight(m_ui.heightSpinBox->value());
-    g_pCore->SetFlightTolerance(m_ui.toleranceSpinBox->value());
 }
 
 QUserInterface::~QUserInterface()
@@ -45,12 +43,22 @@ bool QUserInterface::event(QEvent* event)
 
         m_ui.connStateLabel->setText(bConnected ? "Connected" : "Disconnected");
         m_ui.centralwidget->setEnabled(bConnected);
+
+        m_bNeedsUpdateMissionParams = bConnected;
         break;
     }
     case UI_EVT_DRONE_STATE:
     {
         QDroneStateEvent* pStateEvt = static_cast<QDroneStateEvent*>(event);
         SDroneState state = pStateEvt->m_state;
+
+        if(m_bNeedsUpdateMissionParams)
+        {
+            m_ui.heightSpinBox->setValue(state.height);
+            m_ui.toleranceSpinBox->setValue(state.tolerance);
+            m_ui.densitySpinBox->setValue(state.density);
+            m_bNeedsUpdateMissionParams = false;
+        }
         
         QString posStr, rotStr, cloudStr;
         posStr.sprintf("Position: [%.2f, %.2f, %.2f]", state.x, state.y, state.z);
@@ -64,6 +72,7 @@ bool QUserInterface::event(QEvent* event)
         m_ui.droneStateRot->setText(rotStr);
         m_ui.droneStateCloud->setText(cloudStr);
 
+        m_ui.getCloudBtn->setEnabled(m_ui.cloudDownloadBar->isEnabled() || state.cloudSize > 0);
         m_ui.chargeBar->setValue(state.charge * 100.f);
 
         m_ui.armBtn->setText(state.bArmed ? "Disarm" : "Arm");
@@ -74,6 +83,17 @@ bool QUserInterface::event(QEvent* event)
 
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");
         m_ui.startBtn->setEnabled(state.bArmed && (bCanStart || bCanStop));
+
+        bool bCanAdjustHeight = !equal(float(m_ui.heightSpinBox->value()), state.height,
+            float(m_ui.heightSpinBox->singleStep()) / 2.f);
+        bool bCanAdjustTolerance = !equal(float(m_ui.toleranceSpinBox->value()), state.tolerance,
+            float(m_ui.toleranceSpinBox->singleStep()) / 2.f);
+        bool bCanAdjustDensity = !bWorking && !equal(float(m_ui.densitySpinBox->value()), state.density,
+            float(m_ui.densitySpinBox->singleStep()) / 2.f);
+
+        m_ui.adjustHeightBtn->setEnabled(bCanAdjustHeight);
+        m_ui.adjustToleranceBtn->setEnabled(bCanAdjustTolerance);
+        m_ui.adjustDensityBtn->setEnabled(bCanAdjustDensity);
 
         QGeoCoordinate dronePos = QGeoCoordinate(state.lat, state.lon);
 
@@ -181,12 +201,17 @@ void QUserInterface::OnSendPathBtnClicked()
 
 void QUserInterface::OnAdjustHeightBtnClicked()
 {
-    g_pCore->RequestSendHeight();
+    g_pCore->RequestSendHeight(m_ui.heightSpinBox->value());
 }
 
 void QUserInterface::OnAdjustToleranceBtnClicked()
 {
-    g_pCore->RequestSendTolerance();
+    g_pCore->RequestSendTolerance(m_ui.toleranceSpinBox->value());
+}
+
+void QUserInterface::OnAdjustDensityBtnClicked()
+{
+    g_pCore->RequestSendDensity(m_ui.densitySpinBox->value());
 }
 
 void QUserInterface::OnGetCloudBtnClicked()
@@ -225,16 +250,6 @@ void QUserInterface::OnPlannerBtnClicked()
 void QUserInterface::OnPathSpacingChanged(double val)
 {
     m_plannerWidget.SetMissionSpacing(m_ui.pathSpacingSpinBox->value());
-}
-
-void QUserInterface::OnHeightChanged(double val)
-{
-    g_pCore->SetFlightHeight(val);
-}
-
-void QUserInterface::OnToleranceChanged(double val)
-{
-    g_pCore->SetFlightTolerance(val);
 }
 
 QString QUserInterface::FormatBytes(uint32_t bytesNum)

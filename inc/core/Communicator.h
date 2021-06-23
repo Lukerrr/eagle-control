@@ -17,6 +17,7 @@ public:
 
     bool Update();
     bool IsConnected();
+    bool HasValidState();
     SDroneState GetState();
 
     template<typename T>
@@ -33,6 +34,7 @@ private:
     void SendInternal(char* pData, int len);
 
     SDroneState m_droneState;
+    bool m_bStateValid = false;
 
     int m_gsSocket = -1;
     bool m_bConnected = false;

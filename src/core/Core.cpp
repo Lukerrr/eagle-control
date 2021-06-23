@@ -63,7 +63,7 @@ void CCore::Run()
             bWasConnected = bConnected;
         }
 
-        if(bConnected)
+        if(bConnected && g_pComm->HasValidState())
         {
             SDroneState state = g_pComm->GetState();
             QCoreApplication::postEvent(m_pUi, new QDroneStateEvent(state));
@@ -134,26 +134,6 @@ void CCore::SetMissionPath(CLinePath2D path)
     m_mutex.unlock();
 }
 
-void CCore::SetFlightHeight(float height)
-{
-    m_mutex.lock();
-    if(m_flightHeight != height)
-    {
-        m_flightHeight = height;
-    }
-    m_mutex.unlock();
-}
-
-void CCore::SetFlightTolerance(float tolerance)
-{
-    m_mutex.lock();
-    if(m_flightTolerance != tolerance)
-    {
-        m_flightTolerance = tolerance;
-    }
-    m_mutex.unlock();
-}
-
 void CCore::RequestArmDisarm()
 {
     m_mutex.lock();
@@ -199,20 +179,29 @@ void CCore::RequestSendMission()
     m_mutex.unlock();
 }
 
-void CCore::RequestSendHeight()
+void CCore::RequestSendHeight(float height)
 {
     m_mutex.lock();
     SCmdHeight cmd;
-    cmd.height = m_flightHeight;
+    cmd.height = height;
     g_pComm->Send(cmd);
     m_mutex.unlock();
 }
 
-void CCore::RequestSendTolerance()
+void CCore::RequestSendTolerance(float tolerance)
 {
     m_mutex.lock();
     SCmdTolerance cmd;
-    cmd.tolerance = m_flightTolerance;
+    cmd.tolerance = tolerance;
+    g_pComm->Send(cmd);
+    m_mutex.unlock();
+}
+
+void CCore::RequestSendDensity(float density)
+{
+    m_mutex.lock();
+    SCmdDensity cmd;
+    cmd.density = density;
     g_pComm->Send(cmd);
     m_mutex.unlock();
 }

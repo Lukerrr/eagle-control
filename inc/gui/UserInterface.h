@@ -25,10 +25,9 @@ private:
     void OnSendPathBtnClicked();
     void OnAdjustHeightBtnClicked();
     void OnAdjustToleranceBtnClicked();
+    void OnAdjustDensityBtnClicked();
     void OnGetCloudBtnClicked();
 
-    void OnHeightChanged(double val);
-    void OnToleranceChanged(double val);
     void OnPathSpacingChanged(double val);
 
     QString FormatBytes(uint32_t bytesNum);
@@ -36,4 +35,6 @@ private:
     Ui::UserInterface m_ui;
     QPlannerWidget m_plannerWidget;
     SMissionData m_currentMission;
+
+    bool m_bNeedsUpdateMissionParams = false;
 };

@@ -1,13 +1,13 @@
 /********************************************************************************
-** Form generated from reading UI file 'user_interfacezsUAGh.ui'
+** Form generated from reading UI file 'user_interfaceAhVfVG.ui'
 **
 ** Created by: Qt User Interface Compiler version 5.12.10
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef USER_INTERFACEZSUAGH_H
-#define USER_INTERFACEZSUAGH_H
+#ifndef USER_INTERFACEAHVFVG_H
+#define USER_INTERFACEAHVFVG_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QAction>
@@ -49,6 +49,9 @@ public:
     QDoubleSpinBox *pathSpacingSpinBox;
     QPushButton *getCloudBtn;
     QProgressBar *cloudDownloadBar;
+    QDoubleSpinBox *densitySpinBox;
+    QLabel *densityLabel;
+    QPushButton *adjustDensityBtn;
 
     void setupUi(QMainWindow *UserInterface)
     {
@@ -107,14 +110,14 @@ public:
         plannerBtn->setGeometry(QRect(150, 10, 89, 25));
         heightSpinBox = new QDoubleSpinBox(centralwidget);
         heightSpinBox->setObjectName(QString::fromUtf8("heightSpinBox"));
-        heightSpinBox->setGeometry(QRect(110, 100, 71, 21));
+        heightSpinBox->setGeometry(QRect(80, 101, 61, 18));
         heightSpinBox->setMinimum(0.500000000000000);
         heightSpinBox->setMaximum(8.000000000000000);
         heightSpinBox->setSingleStep(0.010000000000000);
         heightSpinBox->setValue(2.000000000000000);
         heightLabel = new QLabel(centralwidget);
         heightLabel->setObjectName(QString::fromUtf8("heightLabel"));
-        heightLabel->setGeometry(QRect(10, 102, 91, 17));
+        heightLabel->setGeometry(QRect(10, 102, 51, 17));
         sendPathBtn = new QPushButton(centralwidget);
         sendPathBtn->setObjectName(QString::fromUtf8("sendPathBtn"));
         sendPathBtn->setEnabled(false);
@@ -122,13 +125,13 @@ public:
         adjustHeightBtn = new QPushButton(centralwidget);
         adjustHeightBtn->setObjectName(QString::fromUtf8("adjustHeightBtn"));
         adjustHeightBtn->setEnabled(true);
-        adjustHeightBtn->setGeometry(QRect(10, 150, 101, 25));
+        adjustHeightBtn->setGeometry(QRect(150, 100, 89, 20));
         toleranceLabel = new QLabel(centralwidget);
         toleranceLabel->setObjectName(QString::fromUtf8("toleranceLabel"));
-        toleranceLabel->setGeometry(QRect(10, 122, 91, 17));
+        toleranceLabel->setGeometry(QRect(10, 122, 61, 17));
         toleranceSpinBox = new QDoubleSpinBox(centralwidget);
         toleranceSpinBox->setObjectName(QString::fromUtf8("toleranceSpinBox"));
-        toleranceSpinBox->setGeometry(QRect(110, 120, 71, 21));
+        toleranceSpinBox->setGeometry(QRect(80, 121, 61, 18));
         toleranceSpinBox->setMinimum(0.010000000000000);
         toleranceSpinBox->setMaximum(15.000000000000000);
         toleranceSpinBox->setSingleStep(0.010000000000000);
@@ -136,18 +139,18 @@ public:
         adjustToleranceBtn = new QPushButton(centralwidget);
         adjustToleranceBtn->setObjectName(QString::fromUtf8("adjustToleranceBtn"));
         adjustToleranceBtn->setEnabled(true);
-        adjustToleranceBtn->setGeometry(QRect(120, 150, 121, 25));
+        adjustToleranceBtn->setGeometry(QRect(150, 120, 89, 20));
         pathSpacingLabel = new QLabel(centralwidget);
         pathSpacingLabel->setObjectName(QString::fromUtf8("pathSpacingLabel"));
-        pathSpacingLabel->setGeometry(QRect(10, 182, 101, 17));
+        pathSpacingLabel->setGeometry(QRect(10, 165, 71, 17));
         pathSpacingSpinBox = new QDoubleSpinBox(centralwidget);
         pathSpacingSpinBox->setObjectName(QString::fromUtf8("pathSpacingSpinBox"));
-        pathSpacingSpinBox->setGeometry(QRect(110, 180, 71, 21));
+        pathSpacingSpinBox->setGeometry(QRect(80, 166, 61, 18));
         pathSpacingSpinBox->setDecimals(2);
         pathSpacingSpinBox->setMinimum(1.000000000000000);
-        pathSpacingSpinBox->setMaximum(1000.000000000000000);
+        pathSpacingSpinBox->setMaximum(100.000000000000000);
         pathSpacingSpinBox->setSingleStep(0.010000000000000);
-        pathSpacingSpinBox->setValue(20.000000000000000);
+        pathSpacingSpinBox->setValue(5.000000000000000);
         getCloudBtn = new QPushButton(centralwidget);
         getCloudBtn->setObjectName(QString::fromUtf8("getCloudBtn"));
         getCloudBtn->setEnabled(true);
@@ -155,10 +158,24 @@ public:
         cloudDownloadBar = new QProgressBar(centralwidget);
         cloudDownloadBar->setObjectName(QString::fromUtf8("cloudDownloadBar"));
         cloudDownloadBar->setEnabled(false);
-        cloudDownloadBar->setGeometry(QRect(150, 70, 91, 23));
+        cloudDownloadBar->setGeometry(QRect(150, 70, 89, 23));
         cloudDownloadBar->setAutoFillBackground(true);
         cloudDownloadBar->setValue(0);
         cloudDownloadBar->setTextVisible(false);
+        densitySpinBox = new QDoubleSpinBox(centralwidget);
+        densitySpinBox->setObjectName(QString::fromUtf8("densitySpinBox"));
+        densitySpinBox->setGeometry(QRect(80, 141, 61, 18));
+        densitySpinBox->setMinimum(0.100000000000000);
+        densitySpinBox->setMaximum(100.000000000000000);
+        densitySpinBox->setSingleStep(0.010000000000000);
+        densitySpinBox->setValue(4.000000000000000);
+        densityLabel = new QLabel(centralwidget);
+        densityLabel->setObjectName(QString::fromUtf8("densityLabel"));
+        densityLabel->setGeometry(QRect(10, 142, 61, 17));
+        adjustDensityBtn = new QPushButton(centralwidget);
+        adjustDensityBtn->setObjectName(QString::fromUtf8("adjustDensityBtn"));
+        adjustDensityBtn->setEnabled(true);
+        adjustDensityBtn->setGeometry(QRect(150, 140, 89, 20));
         UserInterface->setCentralWidget(centralwidget);
 
         retranslateUi(UserInterface);
@@ -182,11 +199,13 @@ public:
         plannerBtn->setText(QApplication::translate("UserInterface", "Planner", nullptr));
         heightLabel->setText(QApplication::translate("UserInterface", "Height:", nullptr));
         sendPathBtn->setText(QApplication::translate("UserInterface", "Send path", nullptr));
-        adjustHeightBtn->setText(QApplication::translate("UserInterface", "Adjust height", nullptr));
+        adjustHeightBtn->setText(QApplication::translate("UserInterface", "Adjust", nullptr));
         toleranceLabel->setText(QApplication::translate("UserInterface", "Tolerance:", nullptr));
-        adjustToleranceBtn->setText(QApplication::translate("UserInterface", "Adjust tolerance", nullptr));
+        adjustToleranceBtn->setText(QApplication::translate("UserInterface", "Adjust", nullptr));
         pathSpacingLabel->setText(QApplication::translate("UserInterface", "Path spacing:", nullptr));
         getCloudBtn->setText(QApplication::translate("UserInterface", "Get cloud", nullptr));
+        densityLabel->setText(QApplication::translate("UserInterface", "Density:", nullptr));
+        adjustDensityBtn->setText(QApplication::translate("UserInterface", "Adjust", nullptr));
     } // retranslateUi
 
 };
@@ -197,4 +216,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // USER_INTERFACEZSUAGH_H
+#endif // USER_INTERFACEAHVFVG_H

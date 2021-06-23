@@ -88,6 +88,7 @@ void CCommunicator::Disconnect()
     CLog::Log(LOG_INFO, "CCommunicator: disconnected");
     m_bConnected = false;
     m_droneState = SDroneState();
+    m_bStateValid = false;
     Reset();
 }
 
@@ -158,6 +159,10 @@ bool CCommunicator::Update()
             {
                 // Save drone state
                 RecvInternal(m_gsSocket, (char*)&m_droneState, sizeof(m_droneState));
+                if(!m_bStateValid)
+                {
+                    m_bStateValid = true;
+                }
                 break;
             }
             case RSP_CLOUD_CHUNK:
@@ -205,6 +210,11 @@ bool CCommunicator::Update()
 bool CCommunicator::IsConnected()
 {
     return m_bConnected;
+}
+
+bool CCommunicator::HasValidState()
+{
+    return m_bStateValid;
 }
 
 SDroneState CCommunicator::GetState()

@@ -26,14 +26,13 @@ public:
     void StopDownloadManager();
 
     void SetMissionPath(CLinePath2D path);
-    void SetFlightHeight(float height);
-    void SetFlightTolerance(float tolerance);
 
     void RequestArmDisarm();
     void RequestStartStop();
     void RequestSendMission();
-    void RequestSendHeight();
-    void RequestSendTolerance();
+    void RequestSendHeight(float height);
+    void RequestSendTolerance(float tolerance);
+    void RequestSendDensity(float density);
     void RequestGetCloud(string fileName);
     void RequestStopGetCloud();
 
@@ -44,8 +43,6 @@ private:
     uint64_t m_delayMs = 0;
 
     SMissionData m_missionData;
-    float m_flightHeight;
-    float m_flightTolerance;
 
     atomic_bool m_bValid;
     mutex m_mutex;
