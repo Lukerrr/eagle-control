@@ -195,13 +195,13 @@ bool CCommunicator::Update()
     // Read all received packets
     while(ConstructPacket())
     {
+        m_lastDataStamp = Millis();
         switch(m_curPacket.type)
         {
         case RSP_DRONE_STATE:
         {
             // Save drone state
             m_droneState = *(SDroneState*)m_curPacket.payload;
-            m_lastDataStamp = Millis();
             if(!m_bStateValid)
             {
                 m_bStateValid = true;
