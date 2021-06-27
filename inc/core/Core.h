@@ -43,6 +43,7 @@ private:
     uint64_t m_delayMs = 0;
 
     SMissionData m_missionData;
+    uint32_t m_missionHash = -1;
 
     atomic_bool m_bValid;
     mutex m_mutex;

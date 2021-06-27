@@ -36,9 +36,10 @@ public:
 class QMissionChangedEvent : public QEvent
 {
 public:
-    explicit QMissionChangedEvent(SMissionData data, bool bWorking)
-        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_MISSION_CHANGED), m_data(data), m_bWorking(bWorking) {};
+    explicit QMissionChangedEvent(SMissionData data, uint32_t hash, bool bWorking)
+        : QEvent((QEvent::Type)EInterfaceEvent::UI_EVT_MISSION_CHANGED), m_data(data), m_hash(hash), m_bWorking(bWorking) {};
     SMissionData m_data;
+    uint32_t m_hash;
     bool m_bWorking;
 };
 

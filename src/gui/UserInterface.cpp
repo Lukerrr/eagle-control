@@ -78,7 +78,8 @@ bool QUserInterface::event(QEvent* event)
         m_ui.armBtn->setText(state.bArmed ? "Disarm" : "Arm");
 
         bool bWorking = state.systemState > ST_IDLE;
-        bool bCanStart = state.systemState == ST_IDLE && state.missionHash == m_currentMission.hash && m_currentMission.hash != -1;
+        bool bCanStart = state.systemState == ST_IDLE &&
+            state.missionHash == m_currentMissionHash && m_currentMissionHash != -1;
         bool bCanStop = state.systemState == ST_WORKING;
 
         m_ui.startBtn->setText(bWorking ? "Stop" : "Start");
@@ -118,7 +119,8 @@ bool QUserInterface::event(QEvent* event)
     {
         QMissionChangedEvent* pMissionEvt = static_cast<QMissionChangedEvent*>(event);
         m_currentMission = pMissionEvt->m_data;
-        m_ui.sendPathBtn->setEnabled(!pMissionEvt->m_bWorking && m_currentMission.hash != -1);
+        m_currentMissionHash = pMissionEvt->m_hash;
+        m_ui.sendPathBtn->setEnabled(!pMissionEvt->m_bWorking && m_currentMissionHash != -1);
         break;
     }
     case UI_EVT_MISSION_STARTED:

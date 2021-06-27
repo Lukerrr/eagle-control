@@ -35,6 +35,7 @@ private:
     Ui::UserInterface m_ui;
     QPlannerWidget m_plannerWidget;
     SMissionData m_currentMission;
+    uint32_t m_currentMissionHash = -1;
 
     bool m_bNeedsUpdateMissionParams = false;
 };

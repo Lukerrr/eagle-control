@@ -121,16 +121,16 @@ void CCore::SetMissionPath(CLinePath2D path)
     if(m_missionData.pathSize > 0)
     {
         uint32_t len = m_missionData.pathSize * sizeof(SMissionData::Point);
-        m_missionData.hash = GetCrc32((uint8_t*)m_missionData.path, len);
+        m_missionHash = GetCrc32((uint8_t*)m_missionData.path, len);
     }
     else
     {
         // Invalid mission
-        m_missionData.hash = -1;
+        m_missionHash = -1;
     }
 
     bool bWorking = g_pComm->GetState().systemState > ST_IDLE;
-    QCoreApplication::postEvent(m_pUi, new QMissionChangedEvent(m_missionData, bWorking));
+    QCoreApplication::postEvent(m_pUi, new QMissionChangedEvent(m_missionData, m_missionHash, bWorking));
     m_mutex.unlock();
 }
 
@@ -155,7 +155,7 @@ void CCore::RequestStartStop()
     SDroneState state = g_pComm->GetState();
     if(state.systemState == ST_IDLE)
     {
-        if(state.missionHash == m_missionData.hash && m_missionData.hash != -1)
+        if(state.missionHash == m_missionHash && m_missionHash != -1)
         {
             g_pComm->Send(SCmdStart());
             QCoreApplication::postEvent(m_pUi, new QMissionStartedEvent());
@@ -172,7 +172,7 @@ void CCore::RequestSendMission()
 {
     m_mutex.lock();
     SDroneState state = g_pComm->GetState();
-    if(m_missionData.hash != -1 && state.systemState <= ST_IDLE)
+    if(m_missionHash != -1 && state.systemState <= ST_IDLE)
     {
         g_pComm->Send(m_missionData);
     }
