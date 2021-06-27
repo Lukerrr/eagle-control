@@ -15,6 +15,18 @@
 
 #include "Core.h"
 
+size_t GetRspDataSize(ERspType type)
+{
+    switch(type)
+    {
+    case RSP_DRONE_STATE:       return sizeof(SRspDroneState);
+    case RSP_CLOUD_CHUNK:       return sizeof(SRspCloudChunk);
+    case RSP_CLOUD_END:         return sizeof(SRspCloudEnd);
+    default:
+        return 0;
+    }
+}
+
 CCommunicator::CCommunicator()
 {
 #ifdef _WIN32
@@ -30,6 +42,14 @@ CCommunicator::~CCommunicator()
 #ifdef _WIN32
     WSACleanup();
 #endif
+}
+
+CCommunicator::SRawPacket::~SRawPacket()
+{
+    if(payload != NULL)
+    {
+        delete[] payload;
+    }
 }
 
 void CCommunicator::Invalidate()
@@ -83,12 +103,49 @@ bool CCommunicator::TryConnect()
     return m_bConnected;
 }
 
+bool CCommunicator::ConstructPacket()
+{
+    if(m_curPacket.type == RSP_MAX)
+    {
+        // Begin construct packet
+        int dataLen = RecvInternal(m_gsSocket, (char*)&m_curPacket.type, sizeof(m_curPacket.type));
+        if(dataLen <= 0)
+        {
+            // No data or an error occured
+            return false;
+        }
+
+        m_curPacket.requiredSize = GetRspDataSize(m_curPacket.type);
+        if(m_curPacket.requiredSize == 0)
+        {
+            // No payload required
+            return true;
+        }
+        m_curPacket.payload = new uint8_t[m_curPacket.requiredSize];
+    }
+
+    // Continue construct packet
+    size_t remainSize = m_curPacket.requiredSize - m_curPacket.curSize;
+    int dataLen = RecvInternal(m_gsSocket, (m_curPacket.payload + m_curPacket.curSize), remainSize);
+
+    if(dataLen == -1)
+    {
+        // An error occured
+        return false;
+    }
+
+    m_curPacket.curSize += dataLen;
+
+    return m_curPacket.curSize == m_curPacket.requiredSize;
+}
+
 void CCommunicator::Disconnect()
 {
     CLog::Log(LOG_INFO, "CCommunicator: disconnected");
     m_bConnected = false;
     m_droneState = SDroneState();
     m_bStateValid = false;
+    m_curPacket = SRawPacket();
     Reset();
 }
 
@@ -108,7 +165,6 @@ int CCommunicator::RecvInternal(int socket, void* buf, size_t len)
 
     if(len > availBytes)
     {
-        CLog::Log(LOG_WARNING, "CCommunicator: requested receive more bytes than available (%lu > %lu)", len, availBytes);
         len = availBytes;
     }
 
@@ -137,71 +193,50 @@ bool CCommunicator::Update()
     }
 
     // Read all received packets
-    int dataLen;
-    bool bNoData = true;
-    do
+    while(ConstructPacket())
     {
-        ERspType msgType;
-        dataLen = RecvInternal(m_gsSocket, (char*)&msgType, sizeof(msgType));
-
-        if (dataLen == 0)
+        switch(m_curPacket.type)
         {
-            // Disconnected
-            Disconnect();
-            return false;
-        }
-        else if(dataLen > 0)
+        case RSP_DRONE_STATE:
         {
-            bNoData = false;
-            switch(msgType)
+            // Save drone state
+            m_droneState = *(SDroneState*)m_curPacket.payload;
+            m_lastDataStamp = Millis();
+            if(!m_bStateValid)
             {
-            case RSP_DRONE_STATE:
-            {
-                // Save drone state
-                RecvInternal(m_gsSocket, (char*)&m_droneState, sizeof(m_droneState));
-                if(!m_bStateValid)
-                {
-                    m_bStateValid = true;
-                }
-                break;
+                m_bStateValid = true;
             }
-            case RSP_CLOUD_CHUNK:
-            {
-                // Save point cloud chunk
-                SPointCloud cloud;
-                RecvInternal(m_gsSocket, (char*)&cloud, sizeof(cloud));
-                CDownloadManager* pDownloadManager = g_pCore->GetDownloadManager();
-                if(pDownloadManager)
-                {
-                    pDownloadManager->AppendChunk(cloud);
-                    g_pCore->UpdateCloudPercent();
-                }
-                break;
-            }
-            case RSP_CLOUD_END:
-            {
-                // Stop saving cloud
-                g_pCore->StopDownloadManager();
-                break;
-            }
-            default:
-                break;
-            }
+            break;
         }
-    } while (dataLen > 0);
-
-    if(bNoData)
-    {
-        if(Millis() - m_lastDataStamp > g_pConf->GetConfig().autoDisconnectTime)
+        case RSP_CLOUD_CHUNK:
         {
-            CLog::Log(LOG_INFO, "CCommunicator: disconnecting on timeout...");
-            Disconnect();
-            return false;
+            // Save point cloud chunk
+            SPointCloud cloud = *(SPointCloud*)m_curPacket.payload;
+            CDownloadManager* pDownloadManager = g_pCore->GetDownloadManager();
+            if(pDownloadManager)
+            {
+                pDownloadManager->AppendChunk(cloud);
+                g_pCore->UpdateCloudPercent();
+            }
+            break;
         }
+        case RSP_CLOUD_END:
+        {
+            // Stop saving cloud
+            g_pCore->StopDownloadManager();
+            break;
+        }
+        default:
+            break;
+        }
+        m_curPacket = SRawPacket();
     }
-    else
+
+    if(Millis() - m_lastDataStamp > g_pConf->GetConfig().autoDisconnectTime)
     {
-        m_lastDataStamp = Millis();
+        CLog::Log(LOG_INFO, "CCommunicator: disconnecting on timeout...");
+        Disconnect();
+        return false;
     }
 
     return true;
