@@ -239,6 +239,10 @@ bool CCommunicator::Update()
         return false;
     }
 
+    // Send heartbeat if update is ok
+    SCmdHeartbeat hb;
+    Send(hb);
+
     return true;
 }
 
