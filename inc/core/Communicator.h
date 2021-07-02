@@ -40,7 +40,6 @@ private:
 
     bool TryConnect();
     bool ConstructPacket();
-    void Disconnect();
 
     int RecvInternal(int socket, void* buf, size_t len);
     void SendInternal(char* pData, int len);

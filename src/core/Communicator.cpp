@@ -68,6 +68,8 @@ void CCommunicator::Invalidate()
     }
     m_bConnected = false;
     m_droneState = SDroneState();
+    m_bStateValid = false;
+    m_curPacket = SRawPacket();
 }
 
 void CCommunicator::Reset()
@@ -137,16 +139,6 @@ bool CCommunicator::ConstructPacket()
     m_curPacket.curSize += dataLen;
 
     return m_curPacket.curSize == m_curPacket.requiredSize;
-}
-
-void CCommunicator::Disconnect()
-{
-    CLog::Log(LOG_INFO, "CCommunicator: disconnected");
-    m_bConnected = false;
-    m_droneState = SDroneState();
-    m_bStateValid = false;
-    m_curPacket = SRawPacket();
-    Reset();
 }
 
 int CCommunicator::RecvInternal(int socket, void* buf, size_t len)
@@ -235,7 +227,7 @@ bool CCommunicator::Update()
     if(Millis() - m_lastDataStamp > g_pConf->GetConfig().autoDisconnectTime)
     {
         CLog::Log(LOG_INFO, "CCommunicator: disconnecting on timeout...");
-        Disconnect();
+        Reset();
         return false;
     }
 
